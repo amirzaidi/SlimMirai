@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Discord.Net" Version="1.0.0-rc-00623" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.21.0.760" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.2-beta2" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Visual Studio 2015\Projects\CaiqueServer\MusicSearch\MusicSearch.csproj" />
+  </ItemGroup>
+
+</Project>
