@@ -16,6 +16,8 @@ namespace Mirai
         {
             Console.Title = "Mirai";
 
+            //test
+
             SongRequest.YouTube = "AIzaSyAVrXiAHfLEbQbNJP80zbTuW2jL0wuEigQ";
             SongRequest.SoundCloud = "5c28ed4e5aef8098723bcd665d09041d";
 
