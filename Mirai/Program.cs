@@ -14,12 +14,13 @@ namespace Mirai
 
         static async Task Boot()
         {
-            Console.Title = "Mirai";
+            Console.Title = "Slim Mirai";
 
             SongRequest.YouTube = "AIzaSyAVrXiAHfLEbQbNJP80zbTuW2jL0wuEigQ";
             SongRequest.SoundCloud = "5c28ed4e5aef8098723bcd665d09041d";
 
             await Account.Login();
+            Audio.Streamer.Restart();
 
             while (true)
             {

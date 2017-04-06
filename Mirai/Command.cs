@@ -14,7 +14,8 @@ namespace Mirai
             List = new Dictionary<string, Command>
             {
                 { Mention, new Command(Conversation.Commands.Question, 1) },
-                { "add", new Command(Music.Commands.Add, 1) }
+                { "add", new Command(Audio.Commands.Add, 1) },
+                { "join", new Command(Audio.Commands.Join, 2) }
             };
         }
 
@@ -49,7 +50,7 @@ namespace Mirai
             }
             catch (Exception Ex)
             {
-                Console.WriteLine(Ex);
+                Logger.Log(Ex);
             }
         }
     }

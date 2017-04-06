@@ -9,7 +9,7 @@ namespace Mirai
     {
         internal static async Task Connected()
         {
-            Console.WriteLine("Connected!");
+            Logger.Log("Connected!");
             Command.Load(Account.Client.CurrentUser.Mention.Replace("!", ""));
         }
 
@@ -36,7 +36,7 @@ namespace Mirai
                     }
                 }
 
-                Console.WriteLine(Text);
+                Logger.Log(Text);
             }
         }
 
@@ -55,25 +55,7 @@ namespace Mirai
 
         internal static async Task Disconnected(Exception e)
         {
-            Console.WriteLine("Disconnected - Attempting reconnect");
-
-            try
-            {
-                await Account.Logout();
-            }
-            catch (Exception Ex)
-            {
-                Console.WriteLine(Ex);
-            }
-
-            try
-            {
-                await Account.Login();
-            }
-            catch (Exception Ex)
-            {
-                Console.WriteLine(Ex);
-            }
+            Logger.Log("Disconnected");
         }
     }
 }

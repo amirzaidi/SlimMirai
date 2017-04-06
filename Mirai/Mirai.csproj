@@ -5,10 +5,15 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1998;4014</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="1.0.0-rc-00623" />
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.21.0.760" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.2-beta2" />
+    <PackageReference Include="Discord.Net" Version="1.0.0-rc" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.24.1.760" />
+    <PackageReference Include="Google.Cloud.Speech.V1Beta1" Version="1.0.0-alpha07" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
     <PackageReference Include="System.Text.Encodings.Web" Version="4.3.0" />
   </ItemGroup>
 
