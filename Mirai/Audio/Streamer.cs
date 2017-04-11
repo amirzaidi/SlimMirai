@@ -10,15 +10,11 @@ namespace Mirai.Audio
     {
         internal static SongQueue Queue = new SongQueue();
         private static CancellationTokenSource Cancel;
-
-        internal static void Stop()
-        {
-            Cancel?.Cancel();
-        }
+        internal static CancellationTokenSource Skip;
 
         internal static async Task Restart()
         {
-            Stop();
+            Cancel?.Cancel();
             Cancel = new CancellationTokenSource();
 
             const int Stride = 4096;
@@ -26,23 +22,35 @@ namespace Mirai.Audio
             int Swapper = 0;
 
             AudioOutStream Out;
-
             while (!Cancel.IsCancellationRequested)
             {
                 if ((Out = await Connection.GetStream()) != null && Queue.Next())
                 {
+                    Skip = new CancellationTokenSource();
+
                     var FFMpeg = Process.Start(new ProcessStartInfo
                     {
                         FileName = "ffmpeg",
-                        Arguments = $"-re -i async:\"{await Queue.StreamUrl()}\" -f s16le -ar 48k -v 0 pipe:1",
+                        Arguments = $"-re -i \"{await Queue.StreamUrl()}\" -f s16le -ar 48k pipe:1",
                         UseShellExecute = false,
-                        RedirectStandardOutput = true
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
                     });
+                    
+                    FFMpeg.BeginErrorReadLine();
+                    FFMpeg.ErrorDataReceived += async (s, e) =>
+                    {
+                        if (e?.Data?.Contains("Press [q] to stop, [?] for help") ?? false)
+                        {
+                            FFMpeg.CancelErrorRead();
+                            Bot.Channel().SendMessageAsync($"Playing {Queue.Playing.Title}", true);
+                        }
+                    };
 
                     var In = FFMpeg.StandardOutput.BaseStream;
 
                     int Read = await In.ReadAsync(Buffer, Swapper * Stride, Stride);
-                    while (Read != 0)
+                    while (Read != 0 && !Skip.IsCancellationRequested && !Cancel.IsCancellationRequested)
                     {
                         var Send = Out.WriteAsync(Buffer, Swapper * Stride, Read);
 
@@ -51,10 +59,18 @@ namespace Mirai.Audio
 
                         await Send;
                     }
+
+                    Skip = null;
+
+                    try
+                    {
+                        FFMpeg.Kill();
+                    }
+                    catch { }
                 }
                 else
                 {
-                    await Task.Delay(100);
+                    await Task.Delay(50);
                 }
             }
         }

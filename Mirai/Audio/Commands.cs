@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using MusicSearch;
@@ -8,20 +7,39 @@ namespace Mirai.Audio
 {
     static class Commands
     {
-        public static async Task Add(string s, SocketMessage e)
+        internal static async Task Add(string s, SocketMessage e)
         {
+            Formatting.Channel = e.Channel;
+
             Logger.Log("Adding music: " + s);
             var Music = await SongRequest.Search(s);
             if (Music.Count != 0)
             {
-                await e.Channel.SendMessageAsync("Added music: " + Music[0].Title);
                 Streamer.Queue.Enqueue(Music[0]);
+                Formatting.Update();
             }
         }
 
-        public static async Task Join(string s, SocketMessage e)
+        internal static async Task Join(string s, SocketMessage e)
         {
             Connection.JoinSame(e.Author as IGuildUser);
+        }
+
+        internal static async Task Skip(string Text, ulong User)
+        {
+            Logger.Log($"{User} {Text}");
+            Streamer.Skip?.Cancel();
+            Formatting.Update();
+        }
+
+        internal static async Task Remove(string Text, ulong User)
+        {
+            Logger.Log($"{User} {Text}");
+        }
+
+        internal static async Task Move(string Text, ulong User)
+        {
+            Logger.Log($"{User} {Text}");
         }
     }
 }

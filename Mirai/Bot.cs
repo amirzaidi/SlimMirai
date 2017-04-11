@@ -1,12 +1,18 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Mirai
 {
-    class Account
+    class Bot
     {
         internal static DiscordSocketClient Client;
+        static SocketTextChannel ChannelCached;
+        internal static SocketTextChannel Channel()
+        {
+            return ChannelCached ?? (ChannelCached = Client.Guilds.SelectMany(x => x.TextChannels).Where(x => x.Id == Program.TextChannel).First());
+        }
 
         internal static async Task Login()
         {
@@ -23,7 +29,7 @@ namespace Mirai
                 Waiter.SetResult(true);
             };
 
-            await Client.LoginAsync(TokenType.Bot, Program.Bot);
+            await Client.LoginAsync(TokenType.Bot, Program.Token);
             await Client.StartAsync();
 
             await Waiter.Task;

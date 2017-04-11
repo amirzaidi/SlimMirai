@@ -10,12 +10,11 @@ namespace Mirai
         internal static async Task Connected()
         {
             Logger.Log("Connected!");
-            Command.Load(Account.Client.CurrentUser.Mention.Replace("!", ""));
         }
 
         internal static async Task Log(LogMessage e)
         {
-            if (e.Severity != LogSeverity.Info)
+            if (e.Severity != LogSeverity.Info || true)
             {
                 var Text = e.Severity.ToString() + " ";
                 if (e.Message != null)

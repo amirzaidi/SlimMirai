@@ -46,7 +46,7 @@ namespace Mirai.Audio
         {
             if (Client != null && Out == null)
             {
-                Out = Client.CreateDirectPCMStream(AudioApplication.Music, 2880);
+                Out = Client.CreateDirectPCMStream(AudioApplication.Music, 2880, 2);
             }
 
             return Out;
