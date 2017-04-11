@@ -2,6 +2,7 @@
 using Microsoft.Speech.Recognition;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Mirai
@@ -49,6 +50,7 @@ namespace Mirai
                 { "volgende", new CommandFunc<ulong>(Audio.Commands.Skip, 1) },
                 { "verwijder", new CommandFunc<ulong>(Audio.Commands.Remove, 1) },
                 { "verplaats", new CommandFunc<ulong>(Audio.Commands.Move, 1) },
+                { "local", new CommandFunc<ulong>(Audio.Commands.Local, 1) },
             };
 
             var NumberChoices = new Choices();
@@ -64,8 +66,19 @@ namespace Mirai
             Verplaats.Append(NumberChoices);
             Verplaats.Append("naar");
             Verplaats.Append(NumberChoices);
+            var Local = new GrammarBuilder("local")
+            {
+                Culture = new System.Globalization.CultureInfo("en-US")
+            };
+            var LocalFiles = new Choices();
+            var Regex = new Regex("[^a-zA-Z0-9 ]");
+            foreach (var File in MusicSearch.SongRequestLocal.GetFiles())
+            {
+                LocalFiles.Add(Regex.Replace(File.Name, "").Replace("  ", " "));
+            }
+            Local.Append(LocalFiles);
 
-            Audio.SpeechEnginePool.GrammarBuilder = new GrammarBuilder(new Choices(Volgende, Verwijder, Verplaats))
+            Audio.SpeechEnginePool.GrammarBuilder = new GrammarBuilder(new Choices(Volgende, Verwijder, Verplaats, Local))
             {
                 Culture = Audio.SpeechEnginePool.Culture
             };

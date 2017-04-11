@@ -9,7 +9,6 @@ namespace Mirai.Audio
 {
     class Formatting
     {
-        internal static ISocketMessageChannel Channel;
         private static RestUserMessage Message;
         private static CancellationTokenSource Cancel;
 
@@ -20,7 +19,7 @@ namespace Mirai.Audio
             
             try
             {
-                var New = await Channel.SendMessageAsync(string.Empty, embed: new EmbedBuilder()
+                var New = await Bot.Channel().SendMessageAsync(string.Empty, embed: new EmbedBuilder()
                     .WithTitle(Streamer.Queue.IsPlaying ? $"♫ {Streamer.Queue.Playing.Title} ♫" : "Nothing is playing")
                     .WithThumbnailUrl(Streamer.Queue.Playing.ThumbNail)
                     .WithColor(new Color(0xFF5722))

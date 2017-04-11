@@ -43,7 +43,7 @@ namespace Mirai.Audio
                         if (e?.Data?.Contains("Press [q] to stop, [?] for help") ?? false)
                         {
                             FFMpeg.CancelErrorRead();
-                            Bot.Channel().SendMessageAsync($"Playing {Queue.Playing.Title}", true);
+                            Bot.Channel().SendMessageAsync($"Now playing {Queue.Playing.Title}", true);
                         }
                     };
 
