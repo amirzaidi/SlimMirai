@@ -21,7 +21,8 @@ namespace Mirai
             SongRequest.SoundCloud = "5c28ed4e5aef8098723bcd665d09041d";
 
             await Bot.Login();
-            Command.Load(Bot.Client.CurrentUser.Mention.Replace("!", ""));
+            Command.Mention = Bot.Client.CurrentUser.Mention.Replace("!", "");
+            Command.Load();
             Audio.Streamer.Restart();
 
             var Owner = Bot.Client.Guilds.SelectMany(x => x.Users).First(x => Ranks.Get(x.Id) == 3);

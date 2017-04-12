@@ -13,7 +13,9 @@ namespace Mirai
         static Dictionary<string, TextCommand> Typed;
         static Dictionary<string, VoiceCommand> Voiced = new Dictionary<string, VoiceCommand>();
 
-        internal static void Load(string Mention)
+        internal static string Mention;
+
+        internal static Choices Load()
         {
             Typed = new Dictionary<string, TextCommand>
             {
@@ -30,7 +32,7 @@ namespace Mirai
                 NumberChoices.Add(i.ToString());
             }
             
-            Audio.SpeechEngine.Commands = new Choices(
+            return new Choices(
                 AddVoiced("skip", new VoiceCommand(Audio.Commands.Skip, 1)),
 
                 AddVoiced("remove", new VoiceCommand(Audio.Commands.Remove, 1), e =>
@@ -58,8 +60,6 @@ namespace Mirai
 
                 AddVoiced("shut down the program", new VoiceCommand(Management.Commands.Shutdown, 2))
             );
-
-            Audio.SpeechEngine.Invalidate();
         }
 
         private static GrammarBuilder AddVoiced(string KeyWord, VoiceCommand Command, Action<GrammarBuilder> MakeGrammar = null)

@@ -21,7 +21,6 @@ namespace Mirai.Audio
         }
         internal static CultureInfo Culture = new CultureInfo("en-US");
         internal readonly static string[] Trigger = new[] { "music", "bot" };
-        internal static Choices Commands;
         private static long State = long.MinValue;
 
         internal static Task<SpeechEngine> Get(EventHandler<RecognizeCompletedEventArgs> RecognizeCompleted)
@@ -59,24 +58,18 @@ namespace Mirai.Audio
                 }
 
                 var Main = new GrammarBuilder(string.Join(" ", Trigger));
-                if (Commands != null)
-                {
-                    Main.Append(Commands);
-                }
+                Main.Append(Command.Load());
 
-                while (Service.Grammars.Count == 0)
+                try
                 {
-                    try
-                    {
-                        var Waiter = new TaskCompletionSource<LoadGrammarCompletedEventArgs>();
-                        Service.LoadGrammarCompleted += (s, e) => Waiter.SetResult(e);
-                        Service.LoadGrammarAsync(new Grammar(Main));
-                        await Waiter.Task;
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Log(e);
-                    }
+                    var Waiter = new TaskCompletionSource<LoadGrammarCompletedEventArgs>();
+                    Service.LoadGrammarCompleted += (s, e) => Waiter.SetResult(e);
+                    Service.LoadGrammarAsync(new Grammar(Main));
+                    await Waiter.Task;
+                }
+                catch (Exception e)
+                {
+                    Logger.Log(e);
                 }
 
                 OwnState = State;
