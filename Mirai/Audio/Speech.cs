@@ -78,8 +78,13 @@ namespace Mirai.Audio
                     Logger.Log($"{UserId} said {Args.Result.Text} {Args.Result.Confidence} confidence");
 
                     var Values = new Queue<string>(Args.Result.Words.Select(x => x.Text).ToArray());
+                    for (int i = 0; i < SpeechEngine.Trigger.Length; i++)
+                    {
+                        Values.Dequeue();
+                    }
+
                     var Rank = Ranks.Get(UserId);
-                    var Cmd = Command.GetVoice(Args.Result.Text, Rank);
+                    var Cmd = Command.GetVoice(string.Join(" ", Values), Rank);
 
                     if (Cmd == null)
                     {

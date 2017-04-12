@@ -30,8 +30,8 @@ namespace Mirai
                 NumberChoices.Add(i.ToString());
             }
             
-            Audio.SpeechEngine.GrammarBuilder = new GrammarBuilder(new Choices(
-                AddVoiced("next song", new VoiceCommand(Audio.Commands.Skip, 1)),
+            Audio.SpeechEngine.Commands = new Choices(
+                AddVoiced("skip", new VoiceCommand(Audio.Commands.Skip, 1)),
 
                 AddVoiced("remove", new VoiceCommand(Audio.Commands.Remove, 1), e =>
                 {
@@ -50,12 +50,16 @@ namespace Mirai
                     e.Append(new Choices(PopulateSongList().ToArray()));
                 }),
 
-                AddVoiced("playlist", new VoiceCommand(Audio.Commands.Queue, 1)),
+                AddVoiced("queue", new VoiceCommand(Audio.Commands.Queue, 1)),
 
-                AddVoiced("fuck you", new VoiceCommand(Conversation.Commands.NoU, 1)),
+                AddVoiced("fuck you", new VoiceCommand("no u", 1)),
+
+                AddVoiced("how are you doing", new VoiceCommand("I'm fine, thank you~", 1)),
 
                 AddVoiced("shut down", new VoiceCommand(Management.Commands.Shutdown, 2))
-            ));
+            );
+
+            Audio.SpeechEngine.Invalidate();
         }
 
         private static GrammarBuilder AddVoiced(string KeyWord, VoiceCommand Command, Action<GrammarBuilder> MakeGrammar = null)
@@ -68,7 +72,7 @@ namespace Mirai
 
         private static List<string> PopulateSongList()
         {
-            var Regex = new Regex("[^a-zA-Z0-9 ']");
+            var Regex = new Regex("[^a-zA-Z0-9 '-]");
             var PartList = new List<string>();
             foreach (var File in MusicSearch.SongRequestLocal.GetFiles())
             {
@@ -100,6 +104,12 @@ namespace Mirai
                     }
                 }
             }
+
+            PartList.Add("noma brain power");
+            PartList.Add("darude sandstorm");
+            PartList.Add("we are number one idubbbz");
+            PartList.Add("PPAP");
+            PartList.Add("shooting star");
 
             return PartList;
         }
@@ -167,6 +177,10 @@ namespace Mirai
     class VoiceCommand : ICommand<ulong, Queue<string>>
     {
         internal VoiceCommand(Func<ulong, Queue<string>, Task> Handler, int Rank) : base(Handler, Rank)
+        {
+        }
+
+        internal VoiceCommand(string Response, int Rank) : base((u, e) => Bot.Channel().SendMessageAsync(Response, true), Rank)
         {
         }
     }

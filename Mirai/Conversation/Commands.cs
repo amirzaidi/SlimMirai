@@ -16,5 +16,10 @@ namespace Mirai.Conversation
         {
             Bot.Channel().SendMessageAsync("no u", true);
         }
+
+        internal static async Task ImFine(ulong User, Queue<string> Args)
+        {
+            Bot.Channel().SendMessageAsync("I'm fine, thank you", true);
+        }
     }
 }

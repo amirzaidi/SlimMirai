@@ -16,7 +16,10 @@ namespace Mirai
 
         internal static async Task Login()
         {
-            Client = new DiscordSocketClient();
+            Client = new DiscordSocketClient(new DiscordSocketConfig
+            {
+                //LogLevel = LogSeverity.Debug
+            });
             
             Client.Connected += Events.Connected;
             Client.MessageReceived += Events.MessageReceived;
