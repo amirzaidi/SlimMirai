@@ -25,15 +25,14 @@ namespace Mirai
             Audio.Streamer.Restart();
 
             var Owner = Bot.Client.Guilds.SelectMany(x => x.Users).First(x => Ranks.Get(x.Id) == 3);
-            if (Owner.VoiceChannel != null)
-            {
-                Audio.Connection.JoinSame(Owner as Discord.IGuildUser);
-            }
+            Audio.Connection.JoinSame(Owner as Discord.IGuildUser);
 
             while (true)
             {
                 //Do Task
-                await Task.Delay(1000);
+                await Task.Delay(50);
+
+                Console.Title = $"Slim Mirai | {Audio.SpeechEngine.Count} Engines";
             }
         }
     }

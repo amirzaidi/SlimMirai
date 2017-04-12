@@ -13,22 +13,18 @@ namespace Mirai.Audio
         {
             if (User.VoiceChannel != null)
             {
-                var Client = await User.VoiceChannel.ConnectAsync();
-                Client.StreamCreated += UserJoinVoice;
-                Client.StreamDestroyed += UserLeaveVoice;
-
-                Client.Disconnected += async delegate
+                Connection.Client = await User.VoiceChannel.ConnectAsync(Client =>
                 {
-                    if (Connection.Client == Client)
+                    Client.StreamCreated += UserJoinVoice;
+                    Client.StreamDestroyed += UserLeaveVoice;
+                    Client.Disconnected += async delegate
                     {
-                        Out = null;
-                    }
-
-                    Client.StreamCreated -= UserJoinVoice;
-                    Client.StreamDestroyed -= UserLeaveVoice;
-                };
-
-                Connection.Client = Client;
+                        if (Connection.Client == Client)
+                        {
+                            Out = null;
+                        }
+                    };
+                });
             }
         }
 

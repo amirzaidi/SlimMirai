@@ -12,6 +12,13 @@ namespace Mirai.Audio
     class SpeechEngine : IDisposable
     {
         private static ConcurrentQueue<SpeechEngine> Engines = new ConcurrentQueue<SpeechEngine>();
+        internal static int Count
+        {
+            get
+            {
+                return Engines.Count;
+            }
+        }
         internal static CultureInfo Culture = new CultureInfo("en-US");
         internal readonly static string[] Trigger = new[] { "music", "bot" };
         internal static Choices Commands;
@@ -57,10 +64,20 @@ namespace Mirai.Audio
                     Main.Append(Commands);
                 }
 
-                var Waiter = new TaskCompletionSource<LoadGrammarCompletedEventArgs>();
-                Service.LoadGrammarCompleted += (s, e) => Waiter.SetResult(e);
-                Service.LoadGrammarAsync(new Grammar(Main));
-                await Waiter.Task;
+                while (Service.Grammars.Count == 0)
+                {
+                    try
+                    {
+                        var Waiter = new TaskCompletionSource<LoadGrammarCompletedEventArgs>();
+                        Service.LoadGrammarCompleted += (s, e) => Waiter.SetResult(e);
+                        Service.LoadGrammarAsync(new Grammar(Main));
+                        await Waiter.Task;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Log(e);
+                    }
+                }
 
                 OwnState = State;
             }
