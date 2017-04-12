@@ -56,7 +56,7 @@ namespace Mirai
 
                 AddVoiced("how are you doing", new VoiceCommand("I'm fine, thank you~", 1)),
 
-                AddVoiced("shut down", new VoiceCommand(Management.Commands.Shutdown, 2))
+                AddVoiced("shut down the program", new VoiceCommand(Management.Commands.Shutdown, 2))
             );
 
             Audio.SpeechEngine.Invalidate();

@@ -1,5 +1,4 @@
 ﻿using Discord.Audio;
-using Microsoft.Speech.AudioFormat;
 using Microsoft.Speech.Recognition;
 using System;
 using System.Collections;
@@ -73,7 +72,7 @@ namespace Mirai.Audio
                     }
                 }
 
-                if (Args.Result?.Text != null)
+                if (Args.Result?.Text != null && Args.Result.Confidence >= 0.275f)
                 {
                     Logger.Log($"{UserId} said {Args.Result.Text} {Args.Result.Confidence} confidence");
 
