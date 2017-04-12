@@ -58,7 +58,7 @@ namespace Mirai.Audio
                 }
 
                 var Main = new GrammarBuilder(string.Join(" ", Trigger));
-                Main.Append(Command.Load());
+                Main.Append(Command.GetChoices());
 
                 try
                 {

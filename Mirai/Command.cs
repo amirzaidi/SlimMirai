@@ -13,9 +13,7 @@ namespace Mirai
         static Dictionary<string, TextCommand> Typed;
         static Dictionary<string, VoiceCommand> Voiced = new Dictionary<string, VoiceCommand>();
 
-        internal static string Mention;
-
-        internal static Choices Load()
+        internal static void Load(string Mention)
         {
             Typed = new Dictionary<string, TextCommand>
             {
@@ -31,43 +29,49 @@ namespace Mirai
             {
                 NumberChoices.Add(i.ToString());
             }
-            
-            return new Choices(
-                AddVoiced("skip", new VoiceCommand(Audio.Commands.Skip, 1)),
 
-                AddVoiced("remove", new VoiceCommand(Audio.Commands.Remove, 1), e =>
-                {
-                    e.Append(NumberChoices);
-                }),
+            AddVoiced("skip", new VoiceCommand(Audio.Commands.Skip, 1));
 
-                AddVoiced("move", new VoiceCommand(Audio.Commands.Move, 1), e =>
-                {
-                    e.Append(NumberChoices);
-                    e.Append("to");
-                    e.Append(NumberChoices);
-                }),
+            AddVoiced("remove", new VoiceCommand(Audio.Commands.Remove, 1), e =>
+            {
+                e.Append(NumberChoices);
+            });
 
-                AddVoiced("play", new VoiceCommand(Audio.Commands.Play, 1), e =>
-                {
-                    e.Append(new Choices(PopulateSongList().ToArray()));
-                }),
+            AddVoiced("move", new VoiceCommand(Audio.Commands.Move, 1), e =>
+            {
+                e.Append(NumberChoices);
+                e.Append("to");
+                e.Append(NumberChoices);
+            });
 
-                AddVoiced("queue", new VoiceCommand(Audio.Commands.Queue, 1)),
+            AddVoiced("play", new VoiceCommand(Audio.Commands.Play, 1), e =>
+            {
+                e.Append(new Choices(PopulateSongList().ToArray()));
+            });
 
-                AddVoiced("fuck you", new VoiceCommand("no u", 1)),
+            AddVoiced("queue", new VoiceCommand(Audio.Commands.Queue, 1));
 
-                AddVoiced("how are you doing", new VoiceCommand("I'm fine, thank you~", 1)),
+            AddVoiced("fuck you", new VoiceCommand("no u", 1));
 
-                AddVoiced("shut down the program", new VoiceCommand(Management.Commands.Shutdown, 2))
-            );
+            AddVoiced("how are you doing", new VoiceCommand("I'm fine, thank you~", 1));
+
+            AddVoiced("shut down the program", new VoiceCommand(Management.Commands.Shutdown, 2));
         }
 
-        private static GrammarBuilder AddVoiced(string KeyWord, VoiceCommand Command, Action<GrammarBuilder> MakeGrammar = null)
+        private static void AddVoiced(string KeyWord, VoiceCommand Command, Action<GrammarBuilder> MakeGrammar = null)
         {
-            var Builder = new GrammarBuilder(KeyWord);
-            MakeGrammar?.Invoke(Builder);
+            Command.Grammar = MakeGrammar;
             Voiced.Add(KeyWord, Command);
-            return Builder;
+        }
+
+        internal static Choices GetChoices()
+        {
+            return new Choices(Voiced.Select(KVP => 
+            {
+                var Builder = new GrammarBuilder(KVP.Key);
+                KVP.Value.Grammar?.Invoke(Builder);
+                return Builder;
+            }).ToArray());
         }
 
         private static List<string> PopulateSongList()
@@ -176,6 +180,8 @@ namespace Mirai
 
     class VoiceCommand : ICommand<ulong, Queue<string>>
     {
+        internal Action<GrammarBuilder> Grammar;
+
         internal VoiceCommand(Func<ulong, Queue<string>, Task> Handler, int Rank) : base(Handler, Rank)
         {
         }
