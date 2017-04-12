@@ -1,14 +1,20 @@
 ﻿using Discord.WebSocket;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Mirai.Conversation
 {
     class Commands
     {
-        public static async Task Question(string s, SocketMessage e)
+        internal static async Task Question(string s, SocketMessage e)
         {
             Console.WriteLine("Asking question: " + s);
+        }
+
+        internal static async Task NoU(ulong User, Queue<string> Args)
+        {
+            Bot.Channel().SendMessageAsync("no u", true);
         }
     }
 }

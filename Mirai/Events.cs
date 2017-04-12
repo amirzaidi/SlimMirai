@@ -19,19 +19,19 @@ namespace Mirai
                 var Text = e.Severity.ToString() + " ";
                 if (e.Message != null)
                 {
-                    Text += "Message " + e.Message;
+                    Text += $"Message {e.Message}";
                 }
 
                 if (e.Message != "Failed to send message")
                 {
                     if (e.Exception != null)
                     {
-                        Text += "\nException " + e.Exception;
+                        Text += $"\nException {e.Exception}";
                     }
 
                     if (e.Source != null)
                     {
-                        Text += "\nFrom " + e.Source;
+                        Text += $" (From {e.Source})";
                     }
                 }
 
@@ -47,7 +47,7 @@ namespace Mirai
                 if (Split.Length != 0)
                 {
                     var Remaining = e.Content.Substring(Split[0].Length).Trim();
-                    Command.Get(Split[0], Ranks.Get(e.Author.Id))?.Invoke(Remaining, e);
+                    Command.GetText(Split[0], Ranks.Get(e.Author.Id))?.Invoke(Remaining, e);
                 }
             }
         }

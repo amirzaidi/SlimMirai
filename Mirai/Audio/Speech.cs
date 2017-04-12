@@ -2,9 +2,11 @@
 using Microsoft.Speech.AudioFormat;
 using Microsoft.Speech.Recognition;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,8 +18,6 @@ namespace Mirai.Audio
 
         internal static async Task RestartListenService(ulong s, AudioInStream In)
         {
-            var x = SpeechRecognitionEngine.InstalledRecognizers();
-
             StopListenService(s);
             var Source = new CancellationTokenSource();
             Cancel.TryAdd(s, Source);
@@ -52,45 +52,49 @@ namespace Mirai.Audio
 
         private static async Task ProcessVoiceAsync(ulong UserId, RTPFrame[] Frames)
         {
-            var RecognizeWaiter = new TaskCompletionSource<RecognizeCompletedEventArgs>();
-            EventHandler<RecognizeCompletedEventArgs> Event = (s, e) => RecognizeWaiter.SetResult(e);
-
-            var Engine = await SpeechEnginePool.Get();
-            Engine.RecognizeCompleted += Event;
-
             try
             {
-                using (var Memory = new MemoryStream())
+                RecognizeCompletedEventArgs Args;
+
+                using (var Stream = new MemoryStream())
                 {
                     for (int i = 0; i < Frames.Length; i++)
                     {
-                        await Memory.WriteAsync(Frames[i].Payload, 0, Frames[i].Payload.Length);
+                        await Stream.WriteAsync(Frames[i].Payload, 0, Frames[i].Payload.Length);
                     }
 
-                    Memory.Position = 0;
+                    Stream.Position = 0;
 
-                    Engine.SetInputToAudioStream(Memory, new SpeechAudioFormatInfo(44100, AudioBitsPerSample.Sixteen, AudioChannel.Stereo));
-                    Engine.RecognizeAsync(RecognizeMode.Single);
-                    var Args = await RecognizeWaiter.Task;
-
-                    if (Args.Result?.Text != null)
+                    var RecognizeWaiter = new TaskCompletionSource<RecognizeCompletedEventArgs>();
+                    using (var Engine = await SpeechEngine.Get((s, e) => RecognizeWaiter.SetResult(e)))
                     {
-                        Logger.Log($"{UserId} said {Args.Result.Text} {Args.Result.Confidence} confidence");
+                        Engine.Recognize(Stream);
+                        Args = await RecognizeWaiter.Task;
+                    }
+                }
 
-                        var Cmd = Args.Result.Text.Split(' ')[0];
-                        var Remain = Args.Result.Text.Substring(Cmd.Length).Trim();
-                        Command.GetVoice(Cmd, Ranks.Get(UserId))?.Invoke(Remain, UserId);
+                if (Args.Result?.Text != null)
+                {
+                    Logger.Log($"{UserId} said {Args.Result.Text} {Args.Result.Confidence} confidence");
+
+                    var Values = new Queue<string>(Args.Result.Words.Select(x => x.Text).ToArray());
+                    var Rank = Ranks.Get(UserId);
+                    var Cmd = Command.GetVoice(Args.Result.Text, Rank);
+
+                    if (Cmd == null)
+                    {
+                        Command.GetVoice(Values.Dequeue(), Rank)?.Invoke(UserId, Values);
+                    }
+                    else
+                    {
+                        Values.Clear();
+                        Cmd.Invoke(UserId, Values);
                     }
                 }
             }
             catch (Exception Ex)
             {
                 Logger.Log(Ex);
-            }
-            finally
-            {
-                Engine.RecognizeCompleted -= Event;
-                SpeechEnginePool.Return(Engine);
             }
         }
 

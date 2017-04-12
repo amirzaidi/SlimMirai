@@ -17,7 +17,7 @@ namespace Mirai.Audio
             Cancel?.Cancel();
             Cancel = new CancellationTokenSource();
 
-            const int Stride = 4096;
+            const int Stride = 2880 * 2 * 2;
             var Buffer = new byte[2 * Stride];
             int Swapper = 0;
 
