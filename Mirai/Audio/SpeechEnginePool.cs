@@ -9,7 +9,7 @@ namespace Mirai.Audio
     class SpeechEnginePool
     {
         private static ConcurrentStack<SpeechRecognitionEngine> Engines = new ConcurrentStack<SpeechRecognitionEngine>();
-        internal static CultureInfo Culture = new CultureInfo("nl-NL");
+        internal static CultureInfo Culture = new CultureInfo("en-US");
         internal static GrammarBuilder GrammarBuilder;
 
         internal static async Task<SpeechRecognitionEngine> Get()

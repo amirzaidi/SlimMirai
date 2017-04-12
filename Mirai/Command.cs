@@ -2,6 +2,7 @@
 using Microsoft.Speech.Recognition;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -47,36 +48,31 @@ namespace Mirai
 
             Voiced = new Dictionary<string, CommandFunc<ulong>>
             {
-                { "volgende", new CommandFunc<ulong>(Audio.Commands.Skip, 1) },
-                { "verwijder", new CommandFunc<ulong>(Audio.Commands.Remove, 1) },
-                { "verplaats", new CommandFunc<ulong>(Audio.Commands.Move, 1) },
+                { "next", new CommandFunc<ulong>(Audio.Commands.Skip, 1) },
+                { "remove", new CommandFunc<ulong>(Audio.Commands.Remove, 1) },
+                { "move", new CommandFunc<ulong>(Audio.Commands.Move, 1) },
                 { "local", new CommandFunc<ulong>(Audio.Commands.Local, 1) },
             };
 
             var NumberChoices = new Choices();
-            for (int i = 1; i <= 30; i++)
+            for (int i = 1; i <= 50; i++)
             {
                 NumberChoices.Add(i.ToString());
             }
 
-            var Volgende = new GrammarBuilder("volgende");
-            var Verwijder = new GrammarBuilder("verwijder");
+            var Volgende = new GrammarBuilder("next");
+
+            var Verwijder = new GrammarBuilder("remove");
             Verwijder.Append(NumberChoices);
-            var Verplaats = new GrammarBuilder("verplaats");
+
+            var Verplaats = new GrammarBuilder("move");
             Verplaats.Append(NumberChoices);
-            Verplaats.Append("naar");
+            Verplaats.Append("to");
             Verplaats.Append(NumberChoices);
-            var Local = new GrammarBuilder("local")
-            {
-                Culture = new System.Globalization.CultureInfo("en-US")
-            };
-            var LocalFiles = new Choices();
+
+            var Local = new GrammarBuilder("local");
             var Regex = new Regex("[^a-zA-Z0-9 ]");
-            foreach (var File in MusicSearch.SongRequestLocal.GetFiles())
-            {
-                LocalFiles.Add(Regex.Replace(File.Name, "").Replace("  ", " "));
-            }
-            Local.Append(LocalFiles);
+            Local.Append(new Choices(MusicSearch.SongRequestLocal.GetFiles().Select(x => Regex.Replace(x.Name.Split('-').Last().Split(new[] { "feat." }, StringSplitOptions.None).First(), "").Replace("  ", " ").Trim()).GroupBy(x => x).Select(x => x.First()).ToArray()));
 
             Audio.SpeechEnginePool.GrammarBuilder = new GrammarBuilder(new Choices(Volgende, Verwijder, Verplaats, Local))
             {
