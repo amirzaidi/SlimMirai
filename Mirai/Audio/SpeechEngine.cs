@@ -17,22 +17,14 @@ namespace Mirai.Audio
         internal static Choices Commands;
         private static long State = long.MinValue;
 
-        internal static async Task<SpeechEngine> Get(EventHandler<RecognizeCompletedEventArgs> RecognizeCompleted)
+        internal static Task<SpeechEngine> Get(EventHandler<RecognizeCompletedEventArgs> RecognizeCompleted)
         {
             if (!Engines.TryDequeue(out SpeechEngine Engine))
             {
                 Engine = new SpeechEngine
                 {
-                    OwnState = State,
                     Service = new SpeechRecognitionEngine(Culture)
                 };
-
-                await Engine.LoadGrammar();
-
-                if (Engine.Service.Grammars.Count != 1)
-                {
-                    Logger.Log("Grammar count is wrong");
-                }
             }
             
             return Engine.Prepare(RecognizeCompleted);
@@ -41,39 +33,37 @@ namespace Mirai.Audio
         internal static void Invalidate()
         {
             Interlocked.Increment(ref State);
-            while (Engines.TryDequeue(out SpeechEngine Engine))
-            {
-                Engine.Dispose();
-
-                if (!Engine.IsValid)
-                {
-                    break;
-                }
-            }
         }
 
         private SpeechRecognitionEngine Service;
         private long OwnState;
         private EventHandler<RecognizeCompletedEventArgs> RecognizeCompleted;
 
-        private Task LoadGrammar()
-        {
-            var Main = new GrammarBuilder(string.Join(" ", Trigger));
-            if (Commands != null)
-            {
-                Main.Append(Commands);
-            }
-
-            var GrammarWaiter = new TaskCompletionSource<LoadGrammarCompletedEventArgs>();
-            Service.LoadGrammarCompleted += (s, e) => GrammarWaiter.SetResult(e);
-            Service.LoadGrammarAsync(new Grammar(Main));
-            return GrammarWaiter.Task;
-        }
-
-        private SpeechEngine Prepare(EventHandler<RecognizeCompletedEventArgs> RecognizeCompleted)
+        private async Task<SpeechEngine> Prepare(EventHandler<RecognizeCompletedEventArgs> RecognizeCompleted)
         {
             this.RecognizeCompleted = RecognizeCompleted;
             Service.RecognizeCompleted += RecognizeCompleted;
+            
+            if (!IsValid)
+            {
+                if (Service.Grammars.Count != 0)
+                {
+                    Service.UnloadAllGrammars();
+                }
+
+                var Main = new GrammarBuilder(string.Join(" ", Trigger));
+                if (Commands != null)
+                {
+                    Main.Append(Commands);
+                }
+
+                var Waiter = new TaskCompletionSource<LoadGrammarCompletedEventArgs>();
+                Service.LoadGrammarCompleted += (s, e) => Waiter.SetResult(e);
+                Service.LoadGrammarAsync(new Grammar(Main));
+                await Waiter.Task;
+
+                OwnState = State;
+            }
 
             return this;
         }
@@ -94,15 +84,8 @@ namespace Mirai.Audio
 
         public void Dispose()
         {
-            if (IsValid)
-            {
-                Service.RecognizeCompleted -= RecognizeCompleted;
-                Engines.Enqueue(this);
-            }
-            else
-            {
-                Service.Dispose();
-            }
+            Service.RecognizeCompleted -= RecognizeCompleted;
+            Engines.Enqueue(this);
         }
     }
 }

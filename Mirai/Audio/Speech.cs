@@ -72,7 +72,7 @@ namespace Mirai.Audio
                     }
                 }
 
-                if (Args.Result?.Text != null && Args.Result.Confidence >= 0.275f)
+                if (Args.Result?.Text != null && Args.Result.Confidence >= 0.2f)
                 {
                     Logger.Log($"{UserId} said {Args.Result.Text} {Args.Result.Confidence} confidence");
 

@@ -85,8 +85,7 @@ namespace Mirai
                 {
                     PartList.Add(SongName);
                 }
-
-                if (SplitRemix.Length != 1)
+                else if (SplitRemix.Length != 1)
                 {
                     var Remix = Regex.Replace(SplitRemix[1].Replace(" Remix)", "").Replace(" remix)", ""), "").Replace("  ", " ") + " " + SongName;
                     if (!PartList.Contains(Remix))
@@ -94,8 +93,7 @@ namespace Mirai
                         PartList.Add(Remix);
                     }
                 }
-
-                if (SplitArtist.Length != 1)
+                else if (SplitArtist.Length != 1)
                 {
                     var Artist = Regex.Replace(SplitArtist[0], "").Replace("  ", " ") + " " + SongName;
                     if (!PartList.Contains(Artist))
