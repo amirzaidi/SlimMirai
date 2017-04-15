@@ -60,17 +60,12 @@ namespace Mirai.Audio
                 var Main = new GrammarBuilder(string.Join(" ", Trigger));
                 Main.Append(Command.GetChoices());
 
-                try
-                {
-                    var Waiter = new TaskCompletionSource<LoadGrammarCompletedEventArgs>();
-                    Service.LoadGrammarCompleted += (s, e) => Waiter.SetResult(e);
-                    Service.LoadGrammarAsync(new Grammar(Main));
-                    await Waiter.Task;
-                }
-                catch (Exception e)
-                {
-                    Logger.Log(e);
-                }
+                var Waiter = new TaskCompletionSource<LoadGrammarCompletedEventArgs>();
+                EventHandler<LoadGrammarCompletedEventArgs> Event = (s, e) => Waiter.SetResult(e);
+                Service.LoadGrammarCompleted += Event;
+                Service.LoadGrammarAsync(new Grammar(Main));
+                await Waiter.Task;
+                Service.LoadGrammarCompleted -= Event;
 
                 OwnState = State;
             }

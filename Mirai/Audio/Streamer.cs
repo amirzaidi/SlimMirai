@@ -26,6 +26,7 @@ namespace Mirai.Audio
             {
                 if ((Out = await Connection.GetStream()) != null && Queue.Next())
                 {
+                    Bot.Channel().SendMessageAsync($"Now playing {Queue.Playing.Title}", true);
                     Skip = new CancellationTokenSource();
 
                     var FFMpeg = Process.Start(new ProcessStartInfo
@@ -42,20 +43,20 @@ namespace Mirai.Audio
                     {
                         if (e?.Data?.Contains("Press [q] to stop, [?] for help") ?? false)
                         {
+                            //Bot.Channel().SendMessageAsync($"Now playing {Queue.Playing.Title}", true);
                             FFMpeg.CancelErrorRead();
-                            Bot.Channel().SendMessageAsync($"Now playing {Queue.Playing.Title}", true);
                         }
                     };
 
                     var In = FFMpeg.StandardOutput.BaseStream;
 
-                    int Read = await In.ReadAsync(Buffer, Swapper * Stride, Stride);
+                    int Read = await In.ReadAsync(Buffer, Swapper * Stride, Stride, Skip.Token);
                     while (Read != 0 && !Skip.IsCancellationRequested && !Cancel.IsCancellationRequested)
                     {
-                        var Send = Out.WriteAsync(Buffer, Swapper * Stride, Read);
+                        var Send = Out.WriteAsync(Buffer, Swapper * Stride, Read, Skip.Token);
 
                         Swapper = 1 - Swapper;
-                        Read = await In.ReadAsync(Buffer, Swapper * Stride, Stride);
+                        Read = await In.ReadAsync(Buffer, Swapper * Stride, Stride, Skip.Token);
 
                         await Send;
                     }

@@ -30,38 +30,43 @@ namespace Mirai
                 NumberChoices.Add(i.ToString());
             }
 
-            AddVoiced("skip", new VoiceCommand(Audio.Commands.Skip, 1));
+            AddVoiced("skip", Audio.Commands.Skip, 1);
 
-            AddVoiced("remove", new VoiceCommand(Audio.Commands.Remove, 1), e =>
+            AddVoiced("remove", Audio.Commands.Remove, 1, e =>
             {
                 e.Append(NumberChoices);
             });
 
-            AddVoiced("move", new VoiceCommand(Audio.Commands.Move, 1), e =>
+            AddVoiced("move", Audio.Commands.Move, 1, e =>
             {
                 e.Append(NumberChoices);
                 e.Append("to");
                 e.Append(NumberChoices);
             });
 
-            AddVoiced("play", new VoiceCommand(Audio.Commands.Play, 1), e =>
+            AddVoiced("play", Audio.Commands.Play, 1, e =>
             {
                 e.Append(new Choices(PopulateSongList().ToArray()));
             });
 
-            AddVoiced("queue", new VoiceCommand(Audio.Commands.Queue, 1));
+            AddVoiced("queue", Audio.Commands.Queue, 1);
 
-            AddVoiced("fuck you", new VoiceCommand("no u", 1));
+            AddVoiced("fuck you", "no u", 1);
 
-            AddVoiced("how are you doing", new VoiceCommand("I'm fine, thank you~", 1));
+            AddVoiced("how are you doing", "I'm fine, thank you~", 1);
 
-            AddVoiced("shut down the program", new VoiceCommand(Management.Commands.Shutdown, 2));
+            AddVoiced("shut down the program", Management.Commands.Shutdown, 2);
         }
 
-        private static void AddVoiced(string KeyWord, VoiceCommand Command, Action<GrammarBuilder> MakeGrammar = null)
+        private static void AddVoiced(string KeyWord, string Response, int Rank, Action<GrammarBuilder> MakeGrammar = null)
+            => AddVoiced(KeyWord, (u, e) => Bot.Channel().SendMessageAsync(Response, true), Rank, MakeGrammar);
+
+        private static void AddVoiced(string KeyWord, Func<ulong, Queue<string>, Task> Action, int Rank, Action<GrammarBuilder> MakeGrammar = null)
         {
-            Command.Grammar = MakeGrammar;
-            Voiced.Add(KeyWord, Command);
+            Voiced.Add(KeyWord, new VoiceCommand(Action, Rank)
+            {
+                GrammarBuilder = MakeGrammar
+            });
         }
 
         internal static Choices GetChoices()
@@ -69,7 +74,7 @@ namespace Mirai
             return new Choices(Voiced.Select(KVP => 
             {
                 var Builder = new GrammarBuilder(KVP.Key);
-                KVP.Value.Grammar?.Invoke(Builder);
+                KVP.Value.GrammarBuilder?.Invoke(Builder);
                 return Builder;
             }).ToArray());
         }
@@ -109,11 +114,13 @@ namespace Mirai
                 }
             }
 
-            PartList.Add("noma brain power");
-            PartList.Add("darude sandstorm");
-            PartList.Add("we are number one idubbbz");
-            PartList.Add("PPAP");
-            PartList.Add("shooting star");
+            foreach (var Term in System.IO.File.ReadAllText("Search.txt").Split('\n'))
+            {
+                if (Term.Length > 2)
+                {
+                    PartList.Add(Term.Trim());
+                }
+            }
 
             return PartList;
         }
@@ -180,13 +187,9 @@ namespace Mirai
 
     class VoiceCommand : ICommand<ulong, Queue<string>>
     {
-        internal Action<GrammarBuilder> Grammar;
+        internal Action<GrammarBuilder> GrammarBuilder;
 
         internal VoiceCommand(Func<ulong, Queue<string>, Task> Handler, int Rank) : base(Handler, Rank)
-        {
-        }
-
-        internal VoiceCommand(string Response, int Rank) : base((u, e) => Bot.Channel().SendMessageAsync(Response, true), Rank)
         {
         }
     }

@@ -3,11 +3,17 @@ using Discord;
 using Discord.WebSocket;
 using MusicSearch;
 using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using System.Threading;
+using System;
 
 namespace Mirai.Audio
 {
     static class Commands
     {
+        static SemaphoreSlim Waiter = new SemaphoreSlim(1, 1);
+
         internal static async Task Add(string s, SocketMessage e)
         {
             Logger.Log("Adding music: " + s);
@@ -15,7 +21,22 @@ namespace Mirai.Audio
             if (Music.Count != 0)
             {
                 Streamer.Queue.Enqueue(Music[0]);
-                Formatting.Update();
+
+                var Check = Music[0].FullName.ToLower();
+                var Split = s.ToLower().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (Split.Count(x => Check.Contains(x)) * 2 > Split.Length)
+                {
+                    await Waiter.WaitAsync();
+
+                    using (var Open = File.AppendText("Search.txt"))
+                    {
+                        await Open.WriteAsync(s + "\r\n");
+                    }
+
+                    Waiter.Release();
+
+                    SpeechEngine.Invalidate();
+                }
             }
         }
 

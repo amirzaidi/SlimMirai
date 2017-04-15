@@ -72,27 +72,30 @@ namespace Mirai.Audio
                     }
                 }
 
-                if (Args.Result?.Text != null && Args.Result.Confidence >= 0.2f)
+                if (Args.Result?.Text != null)
                 {
                     Logger.Log($"{UserId} said {Args.Result.Text} {Args.Result.Confidence} confidence");
 
-                    var Values = new Queue<string>(Args.Result.Words.Select(x => x.Text).ToArray());
-                    for (int i = 0; i < SpeechEngine.Trigger.Length; i++)
+                    if (Args.Result.Confidence >= 0.4f)
                     {
-                        Values.Dequeue();
-                    }
+                        var Values = new Queue<string>(Args.Result.Words.Select(x => x.Text).ToArray());
+                        for (int i = 0; i < SpeechEngine.Trigger.Length; i++)
+                        {
+                            Values.Dequeue();
+                        }
 
-                    var Rank = Ranks.Get(UserId);
-                    var Cmd = Command.GetVoice(string.Join(" ", Values), Rank);
+                        var Rank = Ranks.Get(UserId);
+                        var Cmd = Command.GetVoice(string.Join(" ", Values), Rank);
 
-                    if (Cmd == null)
-                    {
-                        Command.GetVoice(Values.Dequeue(), Rank)?.Invoke(UserId, Values);
-                    }
-                    else
-                    {
-                        Values.Clear();
-                        Cmd.Invoke(UserId, Values);
+                        if (Cmd == null)
+                        {
+                            Command.GetVoice(Values.Dequeue(), Rank)?.Invoke(UserId, Values);
+                        }
+                        else
+                        {
+                            Values.Clear();
+                            Cmd.Invoke(UserId, Values);
+                        }
                     }
                 }
             }
