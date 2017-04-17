@@ -19,6 +19,8 @@ namespace Mirai
             {
                 { Mention, new TextCommand(Conversation.Commands.Question, 1) },
                 { "add", new TextCommand(Audio.Commands.Add, 1) },
+                { "directadd", new TextCommand(Audio.Commands.DirectAdd, 1) },
+                { "volume", new TextCommand(Audio.Commands.Volume, 1) },
                 { "join", new TextCommand(Audio.Commands.Join, 2) }
             };
 

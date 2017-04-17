@@ -40,6 +40,21 @@ namespace Mirai.Audio
             }
         }
 
+        internal static async Task DirectAdd(string s, SocketMessage e)
+        {
+            Logger.Log("Adding music: " + s);
+            var Music = await SongRequest.Search(s);
+            if (Music.Count != 0)
+            {
+                Streamer.Queue.Enqueue(Music[0]);
+            }
+        }
+
+        internal static async Task Volume(string s, SocketMessage e)
+        {
+            Streamer.Filter = s;
+        }
+
         internal static async Task Join(string s, SocketMessage e)
         {
             Connection.JoinSame(e.Author as IGuildUser);
