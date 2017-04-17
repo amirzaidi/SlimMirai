@@ -60,6 +60,22 @@ namespace Mirai.Audio
             Connection.JoinSame(e.Author as IGuildUser);
         }
 
+        internal static async Task Voice(string s, SocketMessage e)
+        {
+            var Values = new Queue<string>(s.Split(' '));
+            var Rank = Ranks.Get(e.Author.Id);
+            var Cmd = Command.GetVoice(string.Join(" ", Values), Rank);
+            if (Cmd == null)
+            {
+                Command.GetVoice(Values.Dequeue(), Rank)?.Invoke(e.Author.Id, Values);
+            }
+            else
+            {
+                Values.Clear();
+                Cmd.Invoke(e.Author.Id, Values);
+            }
+        }
+
         internal static async Task Skip(ulong User, Queue<string> Args)
         {
             Streamer.Skip?.Cancel();
