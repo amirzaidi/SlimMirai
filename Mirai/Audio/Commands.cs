@@ -34,7 +34,6 @@ namespace Mirai.Audio
                     }
 
                     Waiter.Release();
-
                     SpeechEngine.Invalidate();
                 }
             }
@@ -52,18 +51,24 @@ namespace Mirai.Audio
 
         internal static async Task Volume(string s, SocketMessage e)
         {
+            if (s != string.Empty)
+            {
+                s = $"volume={s}";
+            }
+
             Streamer.Filter = s;
         }
 
         internal static async Task Join(string s, SocketMessage e)
         {
             Connection.JoinSame(e.Author as IGuildUser);
+            Formatting.Update("Hello, " + e.Channel.Name);
         }
 
         internal static async Task Voice(string s, SocketMessage e)
         {
             var Values = new Queue<string>(s.Split(' '));
-            var Rank = Ranks.Get(e.Author.Id);
+            var Rank = User.GetRank(e.Author.Id);
             var Cmd = Command.GetVoice(string.Join(" ", Values), Rank);
             if (Cmd == null)
             {
@@ -85,7 +90,7 @@ namespace Mirai.Audio
         {
             if (ushort.TryParse(Args.Dequeue(), out ushort Result) && Streamer.Queue.TryRemove((ushort)(Result - 1), out Song Song))
             {
-                Bot.Channel().SendMessageAsync($"Removed {Song.Title}", true);
+                Formatting.Update($"Removed {Song.Title}");
             }
         }
 
@@ -97,23 +102,23 @@ namespace Mirai.Audio
 
             if (int.TryParse(From, out int FromInt) && int.TryParse(To, out int ToInt) && Streamer.Queue.TryPush(FromInt - 1, ToInt - 1, out Song Song))
             {
-                Bot.Channel().SendMessageAsync($"Moved {Song.Title} to {ToInt}", true);
+                Formatting.Update($"Moved {Song.Title} to {ToInt}");
             }
         }
 
         internal static async Task Play(ulong User, Queue<string> Args)
         {
             var Text = string.Join(" ", Args);
-            Logger.Log("Adding local music: " + Text);
+            Logger.Log("Adding music (voice): " + Text);
             var Music = await SongRequest.Search(Text, true);
             if (Music.Count != 0)
             {
-                if (Streamer.Queue.IsPlaying)
-                {
-                    Bot.Channel().SendMessageAsync($"Added {Music[0].Title} at {Streamer.Queue.Count + 1}", true);
-                }
-
+                var Playing = Streamer.Queue.IsPlaying;
                 var Place = Streamer.Queue.Enqueue(Music[0]);
+                if (Playing)
+                {
+                    Formatting.Update($"Added {Music[0].Title} at {Place}");
+                }
             }
         }
 
@@ -127,7 +132,7 @@ namespace Mirai.Audio
                     Titles[i] = $"{Titles[i]} at {i + 1}";
                 }
 
-                Bot.Channel().SendMessageAsync(string.Join("\n", Titles), true);
+                Formatting.Update(string.Join("\n", Titles));
             }
         }
     }

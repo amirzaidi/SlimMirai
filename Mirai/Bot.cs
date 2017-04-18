@@ -1,6 +1,8 @@
 ﻿using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mirai
@@ -36,6 +38,17 @@ namespace Mirai
             await Client.StartAsync();
 
             await Waiter.Task;
+        }
+
+        static int TTSWaiter = 0;
+
+        internal static async Task<RestUserMessage> SendTTS(string Text, Embed Embed = null, RequestOptions Options = null)
+        {
+            var TTS = Interlocked.Increment(ref TTSWaiter) < 4; //Max 3 simultaneously
+            var Message = await Channel().SendMessageAsync(Text, TTS, Embed, Options);
+            Interlocked.Decrement(ref TTSWaiter);
+
+            return Message;
         }
 
         internal static async Task Logout()

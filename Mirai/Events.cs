@@ -47,7 +47,7 @@ namespace Mirai
                 if (Split.Length != 0)
                 {
                     var Remaining = e.Content.Substring(Split[0].Length).Trim();
-                    Command.GetText(Split[0], Ranks.Get(e.Author.Id))?.Invoke(Remaining, e);
+                    Command.GetText(Split[0], User.GetRank(e.Author.Id))?.Invoke(Remaining, e);
                 }
             }
         }

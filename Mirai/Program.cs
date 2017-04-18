@@ -24,7 +24,7 @@ namespace Mirai
             Command.Load(Bot.Client.CurrentUser.Mention.Replace("!", ""));
             Audio.Streamer.Restart();
 
-            var Owner = Bot.Client.Guilds.SelectMany(x => x.Users).First(x => Ranks.Get(x.Id) == 3);
+            var Owner = Bot.Client.Guilds.SelectMany(x => x.Users).First(x => User.GetRank(x.Id) == 3);
             Audio.Connection.JoinSame(Owner as Discord.IGuildUser);
 
             while (true)

@@ -54,7 +54,6 @@ namespace Mirai.Audio
             try
             {
                 RecognizeCompletedEventArgs Args;
-
                 using (var Stream = new MemoryStream())
                 {
                     for (int i = 0; i < Frames.Length; i++)
@@ -76,7 +75,7 @@ namespace Mirai.Audio
                 {
                     Logger.Log($"{UserId} said {Args.Result.Text} {Args.Result.Confidence} confidence");
 
-                    if (Args.Result.Confidence >= 0.4f)
+                    if (Args.Result.Confidence >= User.GetConfidence(UserId))
                     {
                         var Values = new Queue<string>(Args.Result.Words.Select(x => x.Text).ToArray());
                         for (int i = 0; i < SpeechEngine.Trigger.Length; i++)
@@ -84,7 +83,7 @@ namespace Mirai.Audio
                             Values.Dequeue();
                         }
 
-                        var Rank = Ranks.Get(UserId);
+                        var Rank = User.GetRank(UserId);
                         var Cmd = Command.GetVoice(string.Join(" ", Values), Rank);
 
                         if (Cmd == null)

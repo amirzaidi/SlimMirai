@@ -19,6 +19,7 @@ namespace Mirai.Audio
                 return Engines.Count;
             }
         }
+
         internal static CultureInfo Culture = new CultureInfo("en-US");
         internal readonly static string[] Trigger = new[] { "music", "bot" };
         private static long State = long.MinValue;
@@ -52,10 +53,7 @@ namespace Mirai.Audio
             
             if (!IsValid)
             {
-                if (Service.Grammars.Count != 0)
-                {
-                    Service.UnloadAllGrammars();
-                }
+                Service.UnloadAllGrammars();
 
                 var Main = new GrammarBuilder(string.Join(" ", Trigger));
                 Main.Append(Command.GetChoices());
