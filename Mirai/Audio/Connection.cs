@@ -9,7 +9,7 @@ namespace Mirai.Audio
         private static IAudioClient Client;
         private static AudioOutStream Out;
 
-        internal static async Task JoinSame(IGuildUser User)
+        internal static async Task<IVoiceChannel> JoinSame(IGuildUser User)
         {
             if (User.VoiceChannel != null)
             {
@@ -26,6 +26,8 @@ namespace Mirai.Audio
                     };
                 });
             }
+
+            return User.VoiceChannel;
         }
 
         private static async Task UserJoinVoice(ulong s, AudioInStream e)

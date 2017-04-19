@@ -19,10 +19,11 @@ namespace Mirai
             {
                 { Mention, new TextCommand(Conversation.Commands.Question, 1) },
                 { "add", new TextCommand(Audio.Commands.Add, 1) },
-                { "directadd", new TextCommand(Audio.Commands.DirectAdd, 1) },
-                { "volume", new TextCommand(Audio.Commands.Volume, 1) },
+                { "remove", new TextCommand(Audio.Commands.Remove, 1) },
+                { "directadd", new TextCommand(Audio.Commands.Play, 2) },
+                { "volume", new TextCommand(Audio.Commands.Volume, 2) },
                 { "join", new TextCommand(Audio.Commands.Join, 2) },
-                { "voice", new TextCommand(Audio.Commands.Voice, 1) }
+                { "voice", new TextCommand(Audio.Commands.Voice, 2) }
             };
 
             Voiced.Clear();

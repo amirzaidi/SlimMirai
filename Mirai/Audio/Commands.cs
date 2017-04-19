@@ -14,32 +14,74 @@ namespace Mirai.Audio
     {
         static SemaphoreSlim Waiter = new SemaphoreSlim(1, 1);
 
-        internal static async Task Add(string s, SocketMessage e)
+        private static async Task<Song?> ResultAsync(string s)
         {
-            Logger.Log("Adding music: " + s);
             var Music = await SongRequest.Search(s);
             if (Music.Count != 0)
             {
-                Streamer.Queue.Enqueue(Music[0]);
-
                 var Check = Music[0].FullName.ToLower();
                 var Split = s.ToLower().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (Split.Count(x => Check.Contains(x)) * 2 > Split.Length)
                 {
-                    await Waiter.WaitAsync();
+                    return Music[0];
+                }
 
-                    using (var Open = File.AppendText("Search.txt"))
+            }
+
+            return null;
+        }
+
+        const string SearchFile = "Search.txt";
+        
+        internal static async Task Add(string s, SocketMessage e)
+        {
+            s = s.Replace("\r", "").Replace("\n", "");
+
+            Logger.Log("Adding music to Search: " + s);
+            var Result = await ResultAsync(s);
+            if (Result != null)
+            {
+                var AllText = File.ReadAllText(SearchFile);
+                var Pos = AllText.IndexOf("\r\n" + s + "\r\n");
+
+                if (Pos == -1)
+                {
+                    await Waiter.WaitAsync();
+                    using (var Open = File.AppendText(SearchFile))
                     {
                         await Open.WriteAsync(s + "\r\n");
                     }
-
                     Waiter.Release();
+
+                    e.Channel.SendMessageAsync(s + " will now find " + Result?.Title);
                     SpeechEngine.Invalidate();
                 }
             }
         }
 
-        internal static async Task DirectAdd(string s, SocketMessage e)
+        internal static async Task Remove(string s, SocketMessage e)
+        {
+            s = s.Replace("\r", "").Replace("\n", "");
+
+            Logger.Log("Removing music from Search: " + s);
+            if (await ResultAsync(s) != null)
+            {
+                var AllText = File.ReadAllText(SearchFile);
+                var Pos = AllText.IndexOf("\r\n" + s + "\r\n");
+
+                if (Pos != -1)
+                {
+                    await Waiter.WaitAsync();
+                    File.WriteAllText(SearchFile, AllText.Replace("\r\n" + s + "\r\n", "\r\n"));
+                    Waiter.Release();
+
+                    e.Channel.SendMessageAsync(s + " has been removed");
+                    SpeechEngine.Invalidate();
+                }
+            }
+        }
+
+        internal static async Task Play(string s, SocketMessage e)
         {
             Logger.Log("Adding music: " + s);
             var Music = await SongRequest.Search(s);
@@ -61,8 +103,8 @@ namespace Mirai.Audio
 
         internal static async Task Join(string s, SocketMessage e)
         {
-            Connection.JoinSame(e.Author as IGuildUser);
-            Formatting.Update("Hello, " + e.Channel.Name);
+            var Voice = await Connection.JoinSame(e.Author as IGuildUser);
+            Formatting.Update("Hello, " + Voice?.Name ?? "unknown channel");
         }
 
         internal static async Task Voice(string s, SocketMessage e)

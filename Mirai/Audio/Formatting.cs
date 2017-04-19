@@ -37,6 +37,9 @@ namespace Mirai.Audio
 
                 Message = New;
             }
+            catch (TaskCanceledException)
+            {
+            }
             catch (Exception Ex)
             {
                 Logger.Log(Ex);

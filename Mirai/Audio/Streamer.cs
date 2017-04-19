@@ -105,9 +105,8 @@ namespace Mirai.Audio
             };
 
             FFMpeg.BeginErrorReadLine();
-
-            var Url = await Queue.StreamUrl();
-            BufferAsync(await GetStream(Url), FFMpeg.StandardInput.BaseStream, Skip.Token);
+            
+            BufferAsync(await GetStream(await Queue.StreamUrl()), FFMpeg.StandardInput.BaseStream, Skip.Token);
 
             using (var Pipe1 = FFMpeg.StandardOutput.BaseStream)
             {
@@ -158,8 +157,13 @@ namespace Mirai.Audio
                 Logger.Log(Ex);
             }
 
-            var Response = (HttpWebResponse)await WebRequest.Create(Url).GetResponseAsync();
-            return Response.GetResponseStream();
+            if (Uri.TryCreate(Url, UriKind.Absolute, out Uri Result))
+            {
+                var Response = (HttpWebResponse)await WebRequest.Create(Result).GetResponseAsync();
+                return Response.GetResponseStream();
+            }
+
+            return Stream.Null;
         }
 
         private static async Task BufferAsync(Stream In, Stream Pipe0, CancellationToken Token)
