@@ -41,7 +41,7 @@ namespace Mirai
 
         internal static async Task MessageReceived(SocketMessage e)
         {
-            if ((!e?.Author.IsBot ?? false) && e.Channel.Id == Program.TextChannel && !string.IsNullOrWhiteSpace(e.Content))
+            if ((!e?.Author.IsBot ?? false) && e.Channel.Id == Bot.ChannelId && !string.IsNullOrWhiteSpace(e.Content))
             {
                 var Split = e.Content.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
                 if (Split.Length != 0)

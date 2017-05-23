@@ -12,20 +12,20 @@ namespace Mirai.Audio
 {
     static class Commands
     {
+        internal static SongType[] SearchTypes = new[] { SongType.Storage, SongType.SoundCloud, SongType.YouTube };
         static SemaphoreSlim Waiter = new SemaphoreSlim(1, 1);
 
         private static async Task<Song?> ResultAsync(string s)
         {
-            var Music = await SongRequest.Search(s);
+            var Music = await SongRequest.Search(s, SearchTypes);
             if (Music.Count != 0)
             {
-                var Check = Music[0].FullName.ToLower();
+                var Check = Music[0].Name.ToLower();
                 var Split = s.ToLower().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (Split.Count(x => Check.Contains(x)) * 2 > Split.Length)
                 {
                     return Music[0];
                 }
-
             }
 
             return null;
@@ -33,11 +33,11 @@ namespace Mirai.Audio
 
         const string SearchFile = "Search.txt";
         
-        internal static async Task Add(string s, SocketMessage e)
+        internal static async Task Index(string s, SocketMessage e)
         {
             s = s.Replace("\r", "").Replace("\n", "");
-
             Logger.Log("Adding music to Search: " + s);
+
             var Result = await ResultAsync(s);
             if (Result != null)
             {
@@ -59,7 +59,7 @@ namespace Mirai.Audio
             }
         }
 
-        internal static async Task Remove(string s, SocketMessage e)
+        internal static async Task Deindex(string s, SocketMessage e)
         {
             s = s.Replace("\r", "").Replace("\n", "");
 
@@ -81,49 +81,13 @@ namespace Mirai.Audio
             }
         }
 
-        internal static async Task Play(string s, SocketMessage e)
-        {
-            Logger.Log("Adding music: " + s);
-            var Music = await SongRequest.Search(s);
-            if (Music.Count != 0)
-            {
-                Streamer.Queue.Enqueue(Music[0]);
-            }
-        }
-
-        internal static async Task Volume(string s, SocketMessage e)
-        {
-            if (s != string.Empty)
-            {
-                s = $"volume={s}";
-            }
-
-            Streamer.Filter = s;
-        }
-
         internal static async Task Join(string s, SocketMessage e)
         {
             var Voice = await Connection.JoinSame(e.Author as IGuildUser);
             Formatting.Update("Hello, " + Voice?.Name ?? "unknown channel");
         }
 
-        internal static async Task Voice(string s, SocketMessage e)
-        {
-            var Values = new Queue<string>(s.Split(' '));
-            var Rank = User.GetRank(e.Author.Id);
-            var Cmd = Command.GetVoice(string.Join(" ", Values), Rank);
-            if (Cmd == null)
-            {
-                Command.GetVoice(Values.Dequeue(), Rank)?.Invoke(e.Author.Id, Values);
-            }
-            else
-            {
-                Values.Clear();
-                Cmd.Invoke(e.Author.Id, Values);
-            }
-        }
-
-        internal static async Task Skip(ulong User, Queue<string> Args)
+        internal static async Task Next(ulong User, Queue<string> Args)
         {
             Streamer.Skip?.Cancel();
         }
@@ -148,33 +112,59 @@ namespace Mirai.Audio
             }
         }
 
-        internal static async Task Play(ulong User, Queue<string> Args)
+        internal static async Task Add(ulong User, Queue<string> Args)
         {
-            var Text = string.Join(" ", Args);
+            var Types = new SongType[SearchTypes.Length];
+            SearchTypes.CopyTo(Types, 0);
+
+            var Words = Args.ToArray();
+            if (Words.Length > 2 && Words[Words.Length - 2] == "from")
+            {
+                var Source = Words[Words.Length - 1];
+                foreach (var Type in Types)
+                {
+                    if (Type.ToString() == Source)
+                    {
+                        Types = new[] { Type };
+                        Array.Resize(ref Words, Words.Length - 2);
+                        break;
+                    }
+                }
+            }
+
+            var Text = string.Join(" ", Words);
             Logger.Log("Adding music (voice): " + Text);
-            var Music = await SongRequest.Search(Text, true);
+            var Music = await SongRequest.Search(Text, Types, true);
             if (Music.Count != 0)
             {
                 var Playing = Streamer.Queue.IsPlaying;
                 var Place = Streamer.Queue.Enqueue(Music[0]);
+                Logger.Log($"Added {Music[0].Title} at {Place}");
                 if (Playing)
-                {
                     Formatting.Update($"Added {Music[0].Title} at {Place}");
-                }
             }
         }
 
-        internal static async Task Queue(ulong User, Queue<string> Args)
+        internal static async Task Playlist(ulong User, Queue<string> Args)
         {
-            var Titles = Streamer.Queue.Titles;
-            if (Titles.Length != 0)
+            if (Streamer.Queue.IsPlaying)
             {
+                var Titles = Streamer.Queue.Titles;
                 for (int i = 0; i < Titles.Length; i++)
                 {
                     Titles[i] = $"{Titles[i]} at {i + 1}";
                 }
 
-                Formatting.Update(string.Join("\n", Titles));
+                Formatting.Update("Playing " + Streamer.Queue.Playing.Title + "\n" + string.Join("\n", Titles));
+            }
+        }
+
+        internal static async Task Volume(ulong User, Queue<string> Args)
+        {
+            var Volume = double.Parse(Args.Dequeue()) / 10;
+            if (Volume <= 1)
+            {
+                Streamer.Filter = Volume == 1 ? string.Empty : $"volume={Volume}";
             }
         }
     }

@@ -18,24 +18,21 @@ namespace Mirai
             Typed = new Dictionary<string, TextCommand>
             {
                 { Mention, new TextCommand(Conversation.Commands.Question, 1) },
-                { "add", new TextCommand(Audio.Commands.Add, 1) },
-                { "remove", new TextCommand(Audio.Commands.Remove, 1) },
-                { "directadd", new TextCommand(Audio.Commands.Play, 2) },
-                { "volume", new TextCommand(Audio.Commands.Volume, 2) },
+                { "index", new TextCommand(Audio.Commands.Index, 1) },
+                { "deindex", new TextCommand(Audio.Commands.Deindex, 1) },
                 { "join", new TextCommand(Audio.Commands.Join, 2) },
-                { "voice", new TextCommand(Audio.Commands.Voice, 2) }
+                { "voice", new TextCommand(Management.Commands.Voice, 2) }
             };
 
             Voiced.Clear();
 
             var NumberChoices = new Choices();
-            for (int i = 1; i <= 50; i++)
+            for (int i = 1; i <= 100; i++)
             {
                 NumberChoices.Add(i.ToString());
             }
 
-            AddVoiced("skip", Audio.Commands.Skip, 1);
-
+            AddVoiced("next", Audio.Commands.Next, 1);
             AddVoiced("remove", Audio.Commands.Remove, 1, e =>
             {
                 e.Append(NumberChoices);
@@ -48,22 +45,25 @@ namespace Mirai
                 e.Append(NumberChoices);
             });
 
-            AddVoiced("play", Audio.Commands.Play, 1, e =>
+            AddVoiced("add", Audio.Commands.Add, 1, e =>
             {
-                e.Append(new Choices(PopulateSongList().ToArray()));
+                var Songs = new GrammarBuilder(new Choices(PopulateSongList().ToArray()));
+                e.Append(new Choices(Songs, Songs + new Choices(Audio.Commands.SearchTypes.Select(x => $"from {x.ToString()}").ToArray())));
             });
 
-            AddVoiced("queue", Audio.Commands.Queue, 1);
+            AddVoiced("what's up", Audio.Commands.Playlist, 1);
+            AddVoiced("volume", Audio.Commands.Volume, 2, e =>
+            {
+                e.Append(NumberChoices);
+            });
 
             AddVoiced("fuck you", "no u", 1);
-
             AddVoiced("how are you doing", "I'm fine, thank you~", 1);
-
             AddVoiced("shut down the program", Management.Commands.Shutdown, 2);
         }
 
         private static void AddVoiced(string KeyWord, string Response, int Rank, Action<GrammarBuilder> MakeGrammar = null)
-            => AddVoiced(KeyWord, (u, e) => Bot.Channel().SendMessageAsync(Response, true), Rank, MakeGrammar);
+            => AddVoiced(KeyWord, (u, e) => Bot.Channel.SendMessageAsync(Response, true), Rank, MakeGrammar);
 
         private static void AddVoiced(string KeyWord, Func<ulong, Queue<string>, Task> Action, int Rank, Action<GrammarBuilder> MakeGrammar = null)
         {

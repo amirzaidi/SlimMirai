@@ -14,12 +14,12 @@ namespace Mirai.Conversation
 
         internal static async Task NoU(ulong User, Queue<string> Args)
         {
-            Bot.Channel().SendMessageAsync("no u", true);
+            Bot.Channel.SendMessageAsync("no u", true);
         }
 
         internal static async Task ImFine(ulong User, Queue<string> Args)
         {
-            Bot.Channel().SendMessageAsync("I'm fine, thank you", true);
+            Bot.Channel.SendMessageAsync("I'm fine, thank you", true);
         }
     }
 }

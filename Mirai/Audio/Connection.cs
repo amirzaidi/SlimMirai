@@ -12,30 +12,26 @@ namespace Mirai.Audio
         internal static async Task<IVoiceChannel> JoinSame(IGuildUser User)
         {
             if (User.VoiceChannel != null)
-            {
-                Connection.Client = await User.VoiceChannel.ConnectAsync(Client =>
+                Client = await User.VoiceChannel.ConnectAsync(Peer =>
                 {
-                    Client.StreamCreated += UserJoinVoice;
-                    Client.StreamDestroyed += UserLeaveVoice;
-                    Client.Disconnected += async delegate
+                    Peer.StreamCreated += PeerJoinVoice;
+                    Peer.StreamDestroyed += PeerLeaveVoice;
+                    Peer.Disconnected += async delegate
                     {
-                        if (Connection.Client == Client)
-                        {
-                            Out = null;
-                        }
+                        Out?.Dispose();
+                        Out = null;
                     };
                 });
-            }
 
             return User.VoiceChannel;
         }
 
-        private static async Task UserJoinVoice(ulong s, AudioInStream e)
+        private static async Task PeerJoinVoice(ulong s, AudioInStream e)
         {
             Speech.RestartListenService(s, e);
         }
         
-        private static async Task UserLeaveVoice(ulong s)
+        private static async Task PeerLeaveVoice(ulong s)
         {
             Speech.StopListenService(s);
         }
@@ -43,9 +39,7 @@ namespace Mirai.Audio
         internal static async Task<AudioOutStream> GetStream()
         {
             if (Client != null && Out == null)
-            {
                 Out = Client.CreateDirectPCMStream(AudioApplication.Music, 2880);
-            }
 
             return Out;
         }

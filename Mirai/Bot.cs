@@ -10,14 +10,29 @@ namespace Mirai
     class Bot
     {
         internal static DiscordSocketClient Client;
+        internal static ulong ChannelId;
         static SocketTextChannel ChannelCached;
-        internal static SocketTextChannel Channel()
+
+        internal static SocketSelfUser User
         {
-            return ChannelCached ?? (ChannelCached = Client.Guilds.SelectMany(x => x.TextChannels).Where(x => x.Id == Program.TextChannel).First());
+            get
+            {
+                return Client.CurrentUser;
+            }
         }
 
-        internal static async Task Login()
+        internal static SocketTextChannel Channel
         {
+            get
+            {
+                return ChannelCached ?? (ChannelCached = Client.Guilds.SelectMany(x => x.TextChannels).Where(x => x.Id == ChannelId).First());
+            }
+        }
+
+        internal static async Task Login(string Token, ulong Channel)
+        {
+            ChannelId = Channel;
+
             Client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 //LogLevel = LogSeverity.Debug
@@ -34,7 +49,7 @@ namespace Mirai
                 Waiter.SetResult(true);
             };
 
-            await Client.LoginAsync(TokenType.Bot, Program.Token);
+            await Client.LoginAsync(TokenType.Bot, Token);
             await Client.StartAsync();
 
             await Waiter.Task;
@@ -45,7 +60,7 @@ namespace Mirai
         internal static async Task<RestUserMessage> SendTTS(string Text, Embed Embed = null, RequestOptions Options = null)
         {
             var TTS = Interlocked.Increment(ref TTSWaiter) < 4; //Max 3 simultaneously
-            var Message = await Channel().SendMessageAsync(Text, TTS, Embed, Options);
+            var Message = await Channel.SendMessageAsync(Text, TTS, Embed, Options);
             Interlocked.Decrement(ref TTSWaiter);
 
             return Message;

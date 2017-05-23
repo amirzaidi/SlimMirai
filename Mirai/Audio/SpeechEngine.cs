@@ -21,7 +21,7 @@ namespace Mirai.Audio
         }
 
         internal static CultureInfo Culture = new CultureInfo("en-US");
-        internal readonly static string[] Trigger = new[] { "music", "bot" };
+        internal readonly static string[] Trigger = new[] { "music", "player" };
         private static long State = long.MinValue;
 
         internal static Task<SpeechEngine> Get(EventHandler<RecognizeCompletedEventArgs> RecognizeCompleted)
