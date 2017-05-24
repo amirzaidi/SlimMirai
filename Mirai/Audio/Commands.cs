@@ -168,7 +168,7 @@ namespace Mirai.Audio
 
             if (Var == "volume" && Value <= 10)
                 Filter.Volume = Value / 10;
-            else if (Var == "pitch" && Value >= 5 && Value <= 20)
+            else if (Var == "tone" && Value >= 5 && Value <= 20)
                 Filter.Tone = Value / 10;
             else
                 return;

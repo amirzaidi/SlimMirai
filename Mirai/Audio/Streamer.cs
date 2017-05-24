@@ -186,7 +186,6 @@ namespace Mirai.Audio
                 {
                     using (In)
                         while (!Token.IsCancellationRequested && (Read = await In.ReadAsync(Buff, 0, Buff.Length, Skip.Token)) != 0)
-                        {
                             if (TicksRemaining > 210 * 10000000)
                                 await Pipe0.WriteAsync(Buff, 0, Read, Skip.Token);
                             else
@@ -196,7 +195,6 @@ namespace Mirai.Audio
 
                                 SendChain = SendChain.ContinueWith(async t => await Pipe0.WriteAsync(Clone, 0, Clone.Length, Skip.Token));
                             }
-                        }
 
                     await SendChain;
                 }
