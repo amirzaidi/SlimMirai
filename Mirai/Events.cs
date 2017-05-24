@@ -18,21 +18,15 @@ namespace Mirai
             {
                 var Text = e.Severity.ToString() + " ";
                 if (e.Message != null)
-                {
                     Text += $"Message {e.Message}";
-                }
 
                 if (e.Message != "Failed to send message")
                 {
                     if (e.Exception != null)
-                    {
                         Text += $"\nException {e.Exception}";
-                    }
 
                     if (e.Source != null)
-                    {
                         Text += $" (From {e.Source})";
-                    }
                 }
 
                 Logger.Log(Text);

@@ -36,7 +36,7 @@ namespace Mirai.Audio
         internal static async Task Index(string s, SocketMessage e)
         {
             s = s.Replace("\r", "").Replace("\n", "");
-            Logger.Log("Adding music to Search: " + s);
+            Logger.Log("Indexing " + s);
 
             var Result = await ResultAsync(s);
             if (Result != null)
@@ -63,7 +63,7 @@ namespace Mirai.Audio
         {
             s = s.Replace("\r", "").Replace("\n", "");
 
-            Logger.Log("Removing music from Search: " + s);
+            Logger.Log("Deindexing " + s);
             if (await ResultAsync(s) != null)
             {
                 var AllText = File.ReadAllText(SearchFile);
@@ -89,7 +89,7 @@ namespace Mirai.Audio
 
         internal static async Task Next(ulong User, Queue<string> Args)
         {
-            Streamer.Skip?.Cancel();
+            Streamer.Next();
         }
 
         internal static async Task Remove(ulong User, Queue<string> Args)
@@ -159,13 +159,21 @@ namespace Mirai.Audio
             }
         }
 
-        internal static async Task Volume(ulong User, Queue<string> Args)
+        internal static async Task Set(ulong User, Queue<string> Args)
         {
-            var Volume = double.Parse(Args.Dequeue()) / 10;
-            if (Volume <= 1)
-            {
-                Streamer.Filter = Volume == 1 ? string.Empty : $"volume={Volume}";
-            }
+            Args.Dequeue();
+            var Var = Args.Dequeue();
+            Args.Dequeue();
+            var Value = double.Parse(Args.Dequeue());
+
+            if (Var == "volume" && Value <= 10)
+                Filter.Volume = Value / 10;
+            else if (Var == "pitch" && Value >= 5 && Value <= 20)
+                Filter.Tone = Value / 10;
+            else
+                return;
+
+            Streamer.ReloadSong();
         }
     }
 }

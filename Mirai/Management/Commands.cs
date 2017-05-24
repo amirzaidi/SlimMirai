@@ -9,7 +9,8 @@ namespace Mirai.Management
     {
         internal static async Task Shutdown(ulong User, Queue<string> Args)
         {
-            Environment.Exit(0);
+            //Save State
+            Program.Live = false;
         }
 
         internal static async Task Voice(string s, SocketMessage e)

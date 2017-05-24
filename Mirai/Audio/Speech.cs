@@ -15,37 +15,34 @@ namespace Mirai.Audio
     {
         private static ConcurrentDictionary<ulong, CancellationTokenSource> Cancel = new ConcurrentDictionary<ulong, CancellationTokenSource>();
 
-        internal static async Task RestartListenService(ulong s, AudioInStream In)
+        internal static async Task StartListenService(ulong User, AudioInStream In)
         {
-            StopListenService(s);
+            StopListenService(User);
             var Source = new CancellationTokenSource();
-            Cancel.TryAdd(s, Source);
-
-            var Queue = new Queue<RTPFrame>();
-            var Timer = new Timer(e =>
+            if (Cancel.TryAdd(User, Source))
             {
-                if (!Source.IsCancellationRequested)
+                var Queue = new Queue<RTPFrame>();
+                var Timer = new Timer(e =>
                 {
-                    var Array = Queue.ToArray();
-                    Task.Run(() => ProcessVoiceAsync(s, Array));
+                    if (!Source.IsCancellationRequested)
+                        ProcessVoiceAsync(User, Queue.ToArray()).ConfigureAwait(false);
+
                     Queue.Clear();
-                }
-            }, null, Timeout.Infinite, Timeout.Infinite);
+                }, null, Timeout.Infinite, Timeout.Infinite);
 
-            while (!Source.IsCancellationRequested)
-            {
-                try
-                {
-                    Queue.Enqueue(await In.ReadFrameAsync(Source.Token));
-                    Timer.Change(150, 0);
-                }
-                catch (OperationCanceledException)
-                {
-                }
-                catch (Exception Ex)
-                {
-                    Logger.Log(Ex);
-                }
+                while (!Source.IsCancellationRequested)
+                    try
+                    {
+                        Queue.Enqueue(await In.ReadFrameAsync(Source.Token));
+                        Timer.Change(125, 0);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                    }
+                    catch (Exception Ex)
+                    {
+                        Logger.Log(Ex);
+                    }
             }
         }
 
@@ -57,9 +54,7 @@ namespace Mirai.Audio
                 using (var Stream = new MemoryStream())
                 {
                     for (int i = 0; i < Frames.Length; i++)
-                    {
                         await Stream.WriteAsync(Frames[i].Payload, 0, Frames[i].Payload.Length);
-                    }
 
                     Stream.Position = 0;
 
@@ -79,17 +74,13 @@ namespace Mirai.Audio
                     {
                         var Values = new Queue<string>(Args.Result.Words.Select(x => x.Text).ToArray());
                         for (int i = 0; i < SpeechEngine.Trigger.Length; i++)
-                        {
                             Values.Dequeue();
-                        }
 
                         var Rank = User.GetRank(UserId);
                         var Cmd = Command.GetVoice(string.Join(" ", Values), Rank);
 
                         if (Cmd == null)
-                        {
                             Command.GetVoice(Values.Dequeue(), Rank)?.Invoke(UserId, Values);
-                        }
                         else
                         {
                             Values.Clear();
@@ -104,12 +95,10 @@ namespace Mirai.Audio
             }
         }
 
-        internal static async Task StopListenService(ulong s)
+        internal static async Task StopListenService(ulong User)
         {
-            if (Cancel.TryRemove(s, out CancellationTokenSource Source))
-            {
+            if (Cancel.TryRemove(User, out CancellationTokenSource Source))
                 Source.Cancel();
-            }
         }
     }
 }

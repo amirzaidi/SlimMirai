@@ -20,17 +20,15 @@ namespace Mirai
                 { Mention, new TextCommand(Conversation.Commands.Question, 1) },
                 { "index", new TextCommand(Audio.Commands.Index, 1) },
                 { "deindex", new TextCommand(Audio.Commands.Deindex, 1) },
-                { "join", new TextCommand(Audio.Commands.Join, 2) },
-                { "voice", new TextCommand(Management.Commands.Voice, 2) }
+                { "join", new TextCommand(Audio.Commands.Join, 1) },
+                { "v", new TextCommand(Management.Commands.Voice, 1) }
             };
 
             Voiced.Clear();
 
             var NumberChoices = new Choices();
             for (int i = 1; i <= 100; i++)
-            {
                 NumberChoices.Add(i.ToString());
-            }
 
             AddVoiced("next", Audio.Commands.Next, 1);
             AddVoiced("remove", Audio.Commands.Remove, 1, e =>
@@ -52,8 +50,11 @@ namespace Mirai
             });
 
             AddVoiced("what's up", Audio.Commands.Playlist, 1);
-            AddVoiced("volume", Audio.Commands.Volume, 2, e =>
+            AddVoiced("set", Audio.Commands.Set, 1, e =>
             {
+                e.Append("the");
+                e.Append(new Choices("volume", "tone"));
+                e.Append("to");
                 e.Append(NumberChoices);
             });
 
@@ -95,36 +96,26 @@ namespace Mirai
                 var SplitRemix = SongName.Split(new[] { " (" }, 2, StringSplitOptions.None);
                 SongName = Regex.Replace(SplitRemix[0].Split(new[] { " feat. " }, 2, StringSplitOptions.None)[0], "").Replace("  ", " ");
                 if (!PartList.Contains(SongName))
-                {
                     PartList.Add(SongName);
-                }
 
                 if (SplitRemix.Length != 1)
                 {
                     var Remix = Regex.Replace(SplitRemix[1].Replace(" Remix)", "").Replace(" remix)", ""), "").Replace("  ", " ") + " " + SongName;
                     if (!PartList.Contains(Remix))
-                    {
                         PartList.Add(Remix);
-                    }
                 }
 
                 if (SplitArtist.Length != 1)
                 {
                     var Artist = Regex.Replace(SplitArtist[0], "").Replace("  ", " ") + " " + SongName;
                     if (!PartList.Contains(Artist))
-                    {
                         PartList.Add(Artist);
-                    }
                 }
             }
 
             foreach (var Term in System.IO.File.ReadAllText("Search.txt").Split('\n'))
-            {
                 if (Term.Length > 2)
-                {
                     PartList.Add(Term.Trim());
-                }
-            }
 
             return PartList;
         }
@@ -135,9 +126,7 @@ namespace Mirai
             {
                 var Command = Typed[KeyWord];
                 if (Command.Rank <= Rank)
-                {
                     return Command;
-                }
             }
 
             return null;
@@ -149,9 +138,7 @@ namespace Mirai
             {
                 var Command = Voiced[KeyWord];
                 if (Command.Rank <= Rank)
-                {
                     return Command;
-                }
             }
 
             return null;

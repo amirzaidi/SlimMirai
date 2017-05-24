@@ -11,63 +11,67 @@ namespace Mirai.Audio
 {
     class Streamer
     {
-        private static string FilterText = string.Empty;
-        internal static string Filter
-        {
-            get
-            {
-                return FilterText == string.Empty ? FilterText : $"-af \"{FilterText}\"";
-            }
-            set
-            {
-                FilterText = value;
-            }
-        }
-
         internal static SongQueue Queue = new SongQueue();
         private static CancellationTokenSource Cancel;
-        internal static CancellationTokenSource Skip;
+        private static CancellationTokenSource Skip;
+        private static double Start = 0;
 
         internal static TimeSpan Duration;
         internal static TimeSpan Time;
-        internal static long RemainingTicks;
+        internal static long TicksRemaining;
 
-        const int Stride = 2880 * 2 * 2;
+        const int Stride = 2880 * 2;
         static byte[] BuffOut = new byte[2 * Stride];
         static int Swapper = 0;
+        
+        internal static string PlaybackSpeed = string.Empty;
 
-        internal static async Task Restart()
+        internal static async Task StartPlayback(AudioOutStream Out)
         {
             Cancel?.Cancel();
             Skip?.Cancel();
             Cancel = new CancellationTokenSource();
-            
-            AudioOutStream Out;
+
             while (!Cancel.IsCancellationRequested)
             {
                 Duration = default(TimeSpan);
                 Time = default(TimeSpan);
-                RemainingTicks = long.MaxValue;
-
-                if ((Out = await Connection.GetStream()) != null && Queue.Next())
+                TicksRemaining = long.MaxValue;
+                
+                try
                 {
-                    Formatting.Update($"Now playing {Queue.Playing.Title}");
+                    await Queue.Next(Cancel.Token);
 
-                    try
+                    if (Start == 0)
                     {
-                        Skip = new CancellationTokenSource();
-                        await StreamAsync(Out);
-                        Skip = null;
+                        Formatting.Update($"Now playing {Queue.Playing.Title}");
+                        Bot.Client.SetGameAsync(Queue.Playing.Title);
                     }
-                    catch (Exception Ex)
-                    {
-                        Logger.Log(Ex);
-                    }
+
+                    Skip = new CancellationTokenSource();
+                    await StreamAsync(Out);
+                    Queue.ResetPlaying();
                 }
-                else
+                catch (Exception Ex)
                 {
-                    await Task.Delay(50);
+                    Logger.Log(Ex);
                 }
+            }
+        }
+
+        internal static void Next()
+        {
+            Start = 0;
+            Skip?.Cancel();
+        }
+
+        internal static void ReloadSong()
+        {
+            if (Queue.IsPlaying)
+            {
+                Start += Time.TotalSeconds + 0.4;
+                Queue.Repeat(1);
+                Skip?.Cancel();
             }
         }
 
@@ -76,7 +80,7 @@ namespace Mirai.Audio
             var FFMpeg = Process.Start(new ProcessStartInfo
             {
                 FileName = "ffmpeg",
-                Arguments = $"-re -i pipe:0 {Filter} -f s16le -ar 48k -ac 2 pipe:1",
+                Arguments = $"-ss {Start} -re -i pipe:0 -f s16le -ar 48k -ac 2 -af \"{Filter.Tag}\" pipe:1",
                 UseShellExecute = false,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
@@ -85,35 +89,35 @@ namespace Mirai.Audio
 
             FFMpeg.ErrorDataReceived += async (s, e) =>
             {
-                var Text = e?.Data?.Trim();
-                if (Text != null)
+                var FFLog = e?.Data?.Trim();
+                if (FFLog != null)
                 {
-                    if (Text.StartsWith("Duration: "))
+                    if (FFLog.StartsWith("Duration: "))
                     {
-                        TimeSpan.TryParse(Text.Substring(10).Split(new[] { ',' }, 2, StringSplitOptions.RemoveEmptyEntries)[0], out Duration);
+                        TimeSpan.TryParse(FFLog.Substring(10).Split(new[] { ',' }, 2, StringSplitOptions.RemoveEmptyEntries)[0], out Duration);
+                        Logger.Log("Enabled buffer acceleration during the last 3 minutes");
                     }
-                    else if (Text.StartsWith("size="))
+                    else if (FFLog.StartsWith("size="))
                     {
-                        TimeSpan.TryParse(Text.Split(new[] { "time=" }, 2, StringSplitOptions.RemoveEmptyEntries)[1].Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries)[0], out Time);
+                        var SplitTime = FFLog.Split(new[] { "time=" }, 2, StringSplitOptions.RemoveEmptyEntries)[1];
+                        TimeSpan.TryParse(SplitTime.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries)[0], out Time);
+                        var SpeedSplit = SplitTime.Split('=');
+                        PlaybackSpeed = SpeedSplit[SpeedSplit.Length - 1].Trim();
                     }
 
-                    if (Duration != default(TimeSpan) && Time != default(TimeSpan) && (RemainingTicks = Duration.Ticks - Time.Ticks) <= 0)
-                    {
+                    if (Duration != default(TimeSpan) && Time != default(TimeSpan) && (TicksRemaining = Duration.Ticks - Time.Ticks) <= 0)
                         Skip?.Cancel();
-                    }
                 }
             };
 
             FFMpeg.BeginErrorReadLine();
-            
             BufferAsync(await GetStream(await Queue.StreamUrl()), FFMpeg.StandardInput.BaseStream, Skip.Token);
-
+            
             using (var Pipe1 = FFMpeg.StandardOutput.BaseStream)
-            {
                 try
                 {
                     int Read = await Pipe1.ReadAsync(BuffOut, Swapper * Stride, Stride, Skip.Token);
-                    while (Read != 0 && !Skip.IsCancellationRequested)
+                    while (Read != 0)
                     {
                         var Send = Out.WriteAsync(BuffOut, Swapper * Stride, Read, Skip.Token);
 
@@ -122,6 +126,8 @@ namespace Mirai.Audio
 
                         await Send;
                     }
+
+                    Start = 0; //After full process without skip
                 }
                 catch (TaskCanceledException)
                 {
@@ -129,7 +135,6 @@ namespace Mirai.Audio
                 catch (OperationCanceledException)
                 {
                 }
-            }
 
             Logger.Log("Disposed FFMpeg Pipe 1");
 
@@ -137,7 +142,9 @@ namespace Mirai.Audio
             {
                 FFMpeg.Kill();
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         private static async Task<Stream> GetStream(string Url)
@@ -170,7 +177,7 @@ namespace Mirai.Audio
         {
             try
             {
-                var AsyncSender = Task.Delay(0);
+                var SendChain = Task.CompletedTask;
 
                 var Buff = new byte[32 * 1024];
                 int Read;
@@ -180,23 +187,18 @@ namespace Mirai.Audio
                     using (In)
                         while (!Token.IsCancellationRequested && (Read = await In.ReadAsync(Buff, 0, Buff.Length, Skip.Token)) != 0)
                         {
-                            if (RemainingTicks > 210 * 10000000)
-                            {
+                            if (TicksRemaining > 210 * 10000000)
                                 await Pipe0.WriteAsync(Buff, 0, Read, Skip.Token);
-                            }
                             else
                             {
-                                var NewBuff = new byte[Read];
-                                Buffer.BlockCopy(Buff, 0, NewBuff, 0, Read);
+                                var Clone = new byte[Read];
+                                Buffer.BlockCopy(Buff, 0, Clone, 0, Read);
 
-                                AsyncSender = AsyncSender.ContinueWith(async t =>
-                                {
-                                    await Pipe0.WriteAsync(NewBuff, 0, NewBuff.Length, Skip.Token);
-                                });
+                                SendChain = SendChain.ContinueWith(async t => await Pipe0.WriteAsync(Clone, 0, Clone.Length, Skip.Token));
                             }
                         }
 
-                    await AsyncSender;
+                    await SendChain;
                 }
             }
             catch (IOException)
