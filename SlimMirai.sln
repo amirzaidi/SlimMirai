@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicSearch", "..\..\..\Visual Studio 2015\Projects\CaiqueServer\MusicSearch\MusicSearch.csproj", "{6C446F1E-31FB-4EB7-AA10-06987B81F013}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirai", "Mirai\Mirai.csproj", "{F9816935-7C14-4B4D-80A4-5AAD178DD95B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.Core", "..\Discord.Net\src\Discord.Net.Core\Discord.Net.Core.csproj", "{0DE4444D-B8C8-4D11-8657-C8D15993EA9E}"
@@ -12,6 +10,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.WebSocket", "..\Discord.Net\src\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj", "{96994FB5-AFD2-4816-AE47-79A8CD6F37AF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord.Net.Rest", "..\Discord.Net\src\Discord.Net.Rest\Discord.Net.Rest.csproj", "{FA67D2AF-39B8-42FE-9295-6660067DD547}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicSearch", "MusicSearch\MusicSearch.csproj", "{D0EF10A1-C073-457A-A176-4176404C66A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,18 +23,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Debug|x64.Build.0 = Debug|Any CPU
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Debug|x86.Build.0 = Debug|Any CPU
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Release|x64.ActiveCfg = Release|Any CPU
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Release|x64.Build.0 = Release|Any CPU
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Release|x86.ActiveCfg = Release|Any CPU
-		{6C446F1E-31FB-4EB7-AA10-06987B81F013}.Release|x86.Build.0 = Release|Any CPU
 		{F9816935-7C14-4B4D-80A4-5AAD178DD95B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F9816935-7C14-4B4D-80A4-5AAD178DD95B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9816935-7C14-4B4D-80A4-5AAD178DD95B}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -83,6 +71,18 @@ Global
 		{FA67D2AF-39B8-42FE-9295-6660067DD547}.Release|x64.Build.0 = Release|Any CPU
 		{FA67D2AF-39B8-42FE-9295-6660067DD547}.Release|x86.ActiveCfg = Release|Any CPU
 		{FA67D2AF-39B8-42FE-9295-6660067DD547}.Release|x86.Build.0 = Release|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Debug|x64.Build.0 = Debug|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Debug|x86.Build.0 = Debug|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Release|x64.ActiveCfg = Release|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Release|x64.Build.0 = Release|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Release|x86.ActiveCfg = Release|Any CPU
+		{D0EF10A1-C073-457A-A176-4176404C66A2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -151,10 +151,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Visual Studio 2015\Projects\CaiqueServer\MusicSearch\MusicSearch.csproj">
-      <Project>{6c446f1e-31fb-4eb7-aa10-06987b81f013}</Project>
-      <Name>MusicSearch</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Discord.Net\src\Discord.Net.Core\Discord.Net.Core.csproj">
       <Project>{0de4444d-b8c8-4d11-8657-c8d15993ea9e}</Project>
       <Name>Discord.Net.Core</Name>
@@ -166,6 +162,10 @@
     <ProjectReference Include="..\..\Discord.Net\src\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj">
       <Project>{96994fb5-afd2-4816-ae47-79a8cd6f37af}</Project>
       <Name>Discord.Net.WebSocket</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MusicSearch\MusicSearch.csproj">
+      <Project>{d0ef10a1-c073-457a-a176-4176404c66a2}</Project>
+      <Name>MusicSearch</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
