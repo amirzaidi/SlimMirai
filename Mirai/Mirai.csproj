@@ -31,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>4014;1998</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Google.Apis, Version=1.24.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
@@ -57,6 +58,10 @@
     </Reference>
     <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="MusicSearch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MusicSearch\bin\Debug\netstandard1.4\MusicSearch.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -162,10 +167,6 @@
     <ProjectReference Include="..\..\Discord.Net\src\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj">
       <Project>{96994fb5-afd2-4816-ae47-79a8cd6f37af}</Project>
       <Name>Discord.Net.WebSocket</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MusicSearch\MusicSearch.csproj">
-      <Project>{d0ef10a1-c073-457a-a176-4176404c66a2}</Project>
-      <Name>MusicSearch</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -6,7 +6,7 @@ namespace Mirai
 {
     class Logger
     {
-        internal static async Task Log(object In)
+        internal static void Log(object In)
         {
 #if DEBUG
             var Text = $"[{DateTime.Now.ToString()}, {Thread.CurrentThread.ManagedThreadId}] {In}";
