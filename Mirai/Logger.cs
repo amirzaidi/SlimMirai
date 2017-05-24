@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Mirai
 {
@@ -8,10 +7,10 @@ namespace Mirai
     {
         internal static void Log(object In)
         {
-#if DEBUG
+//#if DEBUG
             var Text = $"[{DateTime.Now.ToString()}, {Thread.CurrentThread.ManagedThreadId}] {In}";
             Console.WriteLine(Text);
-#endif
+//#endif
         }
     }
 }

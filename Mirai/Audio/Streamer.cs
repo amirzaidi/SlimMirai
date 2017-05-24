@@ -26,37 +26,42 @@ namespace Mirai.Audio
         
         internal static string PlaybackSpeed = string.Empty;
 
-        internal static async Task StartPlayback(AudioOutStream Out)
+        internal static void StopPlayback()
         {
             Cancel?.Cancel();
             Skip?.Cancel();
+        }
+
+        internal static async Task StartPlayback(AudioOutStream Out)
+        {
             Cancel = new CancellationTokenSource();
 
-            while (!Cancel.IsCancellationRequested)
-            {
-                Duration = default(TimeSpan);
-                Time = default(TimeSpan);
-                TicksRemaining = long.MaxValue;
-                
-                try
+            using (Out)
+                while (!Cancel.IsCancellationRequested)
                 {
-                    await Queue.Next(Cancel.Token);
+                    Duration = default(TimeSpan);
+                    Time = default(TimeSpan);
+                    TicksRemaining = long.MaxValue;
 
-                    if (Start == 0)
+                    try
                     {
-                        Formatting.Update($"Now playing {Queue.Playing.Title}");
-                        Bot.Client.SetGameAsync(Queue.Playing.Title);
-                    }
+                        await Queue.Next(Cancel.Token);
 
-                    Skip = new CancellationTokenSource();
-                    await StreamAsync(Out);
-                    Queue.ResetPlaying();
+                        if (Start == 0)
+                        {
+                            Formatting.Update($"Now playing {Queue.Playing.Title}");
+                            Bot.Client.SetGameAsync(Queue.Playing.Title);
+                        }
+
+                        Skip = new CancellationTokenSource();
+                        await StreamAsync(Out);
+                        Queue.ResetPlaying();
+                    }
+                    catch (Exception Ex)
+                    {
+                        Logger.Log(Ex);
+                    }
                 }
-                catch (Exception Ex)
-                {
-                    Logger.Log(Ex);
-                }
-            }
         }
 
         internal static void Next()
