@@ -7,3 +7,5 @@ Prerequisites
 EN-US Language Support: https://www.microsoft.com/en-us/download/details.aspx?id=27224
 
 64-bit FFMPEG: http://ffmpeg.zeranoe.com/builds/
+
+Restart the PC after installing SAPI and the language support.
