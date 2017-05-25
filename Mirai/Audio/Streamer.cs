@@ -14,25 +14,27 @@ namespace Mirai.Audio
         internal static SongQueue Queue = new SongQueue();
         private static CancellationTokenSource Cancel;
         private static CancellationTokenSource Skip;
-        private static double Start = 0;
+        private static double SS = 0;
 
         internal static TimeSpan Duration;
         internal static TimeSpan Time;
         internal static long TicksRemaining;
 
-        const int Stride = 2880 * 2;
+        internal const int Samples = 2880;
+
+        const int Stride = Samples * 2;
         static byte[] BuffOut = new byte[2 * Stride];
         static int Swapper = 0;
         
         internal static string PlaybackSpeed = string.Empty;
 
-        internal static void StopPlayback()
+        internal static void Stop()
         {
             Cancel?.Cancel();
             Skip?.Cancel();
         }
 
-        internal static async Task StartPlayback(AudioOutStream Out)
+        internal static async Task Start(AudioOutStream Out)
         {
             Cancel = new CancellationTokenSource();
 
@@ -47,7 +49,7 @@ namespace Mirai.Audio
                     {
                         await Queue.Next(Cancel.Token);
 
-                        if (Start == 0)
+                        if (SS == 0)
                         {
                             Formatting.Update($"Now playing {Queue.Playing.Title}");
                             Bot.Client.SetGameAsync(Queue.Playing.Title);
@@ -66,7 +68,7 @@ namespace Mirai.Audio
 
         internal static void Next()
         {
-            Start = 0;
+            SS = 0;
             Skip?.Cancel();
         }
 
@@ -74,18 +76,18 @@ namespace Mirai.Audio
         {
             if (Queue.IsPlaying)
             {
-                Start += Time.TotalSeconds + 0.4;
+                SS += Time.TotalSeconds + 0.4;
                 Queue.Repeat(1);
                 Skip?.Cancel();
             }
         }
 
-        private static async Task StreamAsync(Stream Out)
+        private static async Task StreamAsync(AudioOutStream Out)
         {
             var FFMpeg = Process.Start(new ProcessStartInfo
             {
                 FileName = "ffmpeg",
-                Arguments = $"-ss {Start} -re -i pipe:0 -f s16le -ar 48k -ac 2 -af \"{Filter.Tag}\" pipe:1",
+                Arguments = $"-ss {SS} -re -i pipe:0 -f s16le -ar 48k -ac 2 -af \"{Filter.Tag}\" pipe:1",
                 UseShellExecute = false,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
@@ -117,7 +119,7 @@ namespace Mirai.Audio
 
             FFMpeg.BeginErrorReadLine();
             BufferAsync(await GetStream(await Queue.StreamUrl()), FFMpeg.StandardInput.BaseStream, Skip.Token);
-            
+
             using (var Pipe1 = FFMpeg.StandardOutput.BaseStream)
                 try
                 {
@@ -126,13 +128,13 @@ namespace Mirai.Audio
                     {
                         var Send = Out.WriteAsync(BuffOut, Swapper * Stride, Read, Skip.Token);
 
-                        Swapper = 1 - Swapper;
+                        Swapper = Swapper ^ 1;
                         Read = await Pipe1.ReadAsync(BuffOut, Swapper * Stride, Stride, Skip.Token);
 
                         await Send;
                     }
 
-                    Start = 0; //After full process without skip
+                    SS = 0; //After full process without skip
                 }
                 catch (TaskCanceledException)
                 {

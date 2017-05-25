@@ -11,7 +11,7 @@ namespace Mirai.Audio
             var Channel = User?.VoiceChannel;
             if (Channel != null)
             {
-                Streamer.StopPlayback();
+                Streamer.Stop();
 
                 var Client = await Channel.ConnectAsync(Peer =>
                 {
@@ -19,7 +19,7 @@ namespace Mirai.Audio
                     Peer.StreamDestroyed += async s => Speech.StopListenService(s);
                 });
 
-                Streamer.StartPlayback(Client.CreateDirectPCMStream(AudioApplication.Music, 2880));
+                Streamer.Start(Client.CreateDirectPCMStream(AudioApplication.Music, Streamer.Samples));
             }
 
             return Channel;
