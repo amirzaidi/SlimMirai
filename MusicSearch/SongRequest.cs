@@ -30,7 +30,7 @@ namespace MusicSearch
                 var Vid = await Client.GetVideoInfoAsync(Id);
                 MixedStreamInfo Max = null;
                 foreach (var V in Vid.MixedStreams)
-                    if (Max == null || Max.VideoQuality < V.VideoQuality)
+                    if (Max == null || V.VideoQuality > Max.VideoQuality)
                         Max = V;
 
                 return Max?.Url ?? string.Empty;

@@ -1,5 +1,4 @@
 ﻿using Discord;
-using Discord.Audio;
 using System.Threading.Tasks;
 
 namespace Mirai.Audio
@@ -19,7 +18,7 @@ namespace Mirai.Audio
                     Peer.StreamDestroyed += async s => Speech.StopListenService(s);
                 });
 
-                Streamer.Start(Client.CreateDirectPCMStream(AudioApplication.Music, Streamer.Samples));
+                Streamer.Start(Client);
             }
 
             return Channel;

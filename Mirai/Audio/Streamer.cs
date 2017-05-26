@@ -25,7 +25,7 @@ namespace Mirai.Audio
         const int Stride = Samples * 2;
         static byte[] BuffOut = new byte[2 * Stride];
         static int Swapper = 0;
-        
+
         internal static string PlaybackSpeed = string.Empty;
 
         internal static void Stop()
@@ -34,36 +34,39 @@ namespace Mirai.Audio
             Skip?.Cancel();
         }
 
-        internal static async Task Start(AudioOutStream Out)
+        internal static async Task Start(IAudioClient Client)
         {
             Cancel = new CancellationTokenSource();
 
-            using (Out)
-                while (!Cancel.IsCancellationRequested)
+            while (!Cancel.IsCancellationRequested)
+            {
+                Duration = default(TimeSpan);
+                Time = default(TimeSpan);
+                TicksRemaining = long.MaxValue;
+
+                try
                 {
-                    Duration = default(TimeSpan);
-                    Time = default(TimeSpan);
-                    TicksRemaining = long.MaxValue;
+                    await Queue.Next(Cancel.Token);
 
-                    try
+                    if (SS == 0)
                     {
-                        await Queue.Next(Cancel.Token);
+                        Formatting.Update($"Now playing {Queue.Playing.Title}");
+                        Bot.Client.SetGameAsync(Queue.Playing.Title);
+                    }
 
-                        if (SS == 0)
-                        {
-                            Formatting.Update($"Now playing {Queue.Playing.Title}");
-                            Bot.Client.SetGameAsync(Queue.Playing.Title);
-                        }
+                    Skip = new CancellationTokenSource();
 
-                        Skip = new CancellationTokenSource();
+                    await Client.SetSpeakingAsync(true);
+                    using (var Out = Client.CreateDirectPCMStream(AudioApplication.Music))
                         await StreamAsync(Out);
-                        Queue.ResetPlaying();
-                    }
-                    catch (Exception Ex)
-                    {
-                        Logger.Log(Ex);
-                    }
+
+                    Queue.ResetPlaying();
                 }
+                catch (Exception Ex)
+                {
+                    Logger.Log(Ex);
+                }
+            }
         }
 
         internal static void Next()
