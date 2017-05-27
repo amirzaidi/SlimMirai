@@ -114,6 +114,10 @@ namespace Mirai.Audio
                         var SpeedSplit = SplitTime.Split('=');
                         PlaybackSpeed = SpeedSplit[SpeedSplit.Length - 1].Trim();
                     }
+                    else
+                    {
+                        Logger.Log(FFLog);
+                    }
 
                     if (Duration != default(TimeSpan) && Time != default(TimeSpan) && (TicksRemaining = Duration.Ticks - Time.Ticks) <= 0)
                         Skip?.Cancel();

@@ -11,7 +11,7 @@ namespace Mirai.Audio
         {
             get
             {
-                return $"volume={Volume},asetrate=r={44100 * Tone}K,atempo={1 / Tone},afade=t=in:d=0.4:curve=squ";
+                return $"volume={Volume},asetrate=r={44100 * Tone},atempo={1 / Tone},afade=t=in:d=0.4:curve=squ";
             }
         }
     }

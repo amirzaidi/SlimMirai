@@ -28,5 +28,10 @@ namespace Mirai.Management
                 Cmd.Invoke(e.Author.Id, Values);
             }
         }
+
+        internal static async Task Name(string s, SocketMessage e)
+        {
+            Bot.User.ModifyAsync(x => x.Username = s);
+        }
     }
 }
