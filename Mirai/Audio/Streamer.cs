@@ -57,7 +57,7 @@ namespace Mirai.Audio
                     Skip = new CancellationTokenSource();
 
                     await Client.SetSpeakingAsync(true);
-                    using (var Out = Client.CreateDirectPCMStream(AudioApplication.Music, 128 * 1024, 0))
+                    using (var Out = Client.CreateDirectPCMStream(AudioApplication.Music, 128 * 1024, Filter.Packets))
                         await StreamAsync(Out);
 
                     Queue.ResetPlaying();

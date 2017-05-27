@@ -170,6 +170,8 @@ namespace Mirai.Audio
                 Filter.Volume = Value / 10;
             else if (Var == "tone" && Value >= 5 && Value <= 20)
                 Filter.Tone = Value / 10;
+            else if (Var == "packets")
+                Filter.Packets = int.Parse(Value.ToString());
             else
                 return;
 

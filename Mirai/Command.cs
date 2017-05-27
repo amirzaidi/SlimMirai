@@ -27,7 +27,7 @@ namespace Mirai
             Voiced.Clear();
 
             var NumberChoices = new Choices();
-            for (int i = 1; i <= 100; i++)
+            for (int i = 0; i <= 100; i++)
                 NumberChoices.Add(i.ToString());
 
             AddVoiced("next", Audio.Commands.Next, 1);
@@ -53,7 +53,7 @@ namespace Mirai
             AddVoiced("set", Audio.Commands.Set, 1, e =>
             {
                 e.Append("the");
-                e.Append(new Choices("volume", "tone"));
+                e.Append(new Choices("volume", "tone", "packets"));
                 e.Append("to");
                 e.Append(NumberChoices);
             });
