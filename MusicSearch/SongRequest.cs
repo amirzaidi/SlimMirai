@@ -20,7 +20,7 @@ namespace MusicSearch
 
         public static Func<string, Task<string>> GetTelegramUrl;
 
-        public static async Task<string> StreamUrl(Song Song, bool AllFormats = true)
+        public static async Task<string> StreamUrl(Song Song)
         {
             if (Song.Type == SongType.YouTube)
             {

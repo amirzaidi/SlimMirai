@@ -158,7 +158,7 @@ namespace MusicSearch
         public List<Song> ToList()
             => Queue.ToList();
 
-        public Task<string> StreamUrl(bool AllFormats = true)
-            => SongRequest.StreamUrl(Playing, AllFormats);
+        public Task<string> StreamUrl()
+            => SongRequest.StreamUrl(Playing);
     }
 }
