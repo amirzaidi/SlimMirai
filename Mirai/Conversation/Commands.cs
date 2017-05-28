@@ -9,7 +9,6 @@ namespace Mirai.Conversation
     {
         internal static async Task Question(string s, SocketMessage e)
         {
-            Console.WriteLine("Asking question: " + s);
         }
 
         internal static async Task NoU(ulong User, Queue<string> Args)

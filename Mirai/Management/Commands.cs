@@ -1,5 +1,4 @@
 ﻿using Discord.WebSocket;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,7 +9,7 @@ namespace Mirai.Management
         internal static async Task Shutdown(ulong User, Queue<string> Args)
         {
             //Save State
-            Program.Live = false;
+            Program.Shutdown.TrySetResult(true);
         }
 
         internal static async Task Voice(string s, SocketMessage e)

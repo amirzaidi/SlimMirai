@@ -32,6 +32,7 @@ namespace Mirai
                 NumberChoices.Add(i.ToString());
 
             AddVoiced("next", Audio.Commands.Next, 1);
+            AddVoiced("shuffle", Audio.Commands.Shuffle, 1);
             AddVoiced("remove", Audio.Commands.Remove, 1, e =>
             {
                 e.Append(NumberChoices);

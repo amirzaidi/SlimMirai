@@ -100,6 +100,12 @@ namespace Mirai.Audio
             }
         }
 
+        internal static async Task Shuffle(ulong User, Queue<string> Args)
+        {
+            Streamer.Queue.Shuffle();
+            Playlist(User, Args);
+        }
+
         internal static async Task Move(ulong User, Queue<string> Args)
         {
             var From = Args.Dequeue();
@@ -151,9 +157,7 @@ namespace Mirai.Audio
             {
                 var Titles = Streamer.Queue.Titles;
                 for (int i = 0; i < Titles.Length; i++)
-                {
                     Titles[i] = $"{Titles[i]} at {i + 1}";
-                }
 
                 Formatting.Update("Playing " + Streamer.Queue.Playing.Title + "\n" + string.Join("\n", Titles));
             }

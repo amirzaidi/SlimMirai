@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,9 +69,7 @@ namespace MusicSearch
             try
             {
                 while (Queue.Count == 0 && !Cancel.IsCancellationRequested)
-                {
                     await Task.Delay(1);
-                }
 
                 return Queue.TryDequeue(out mPlaying);
             }
@@ -82,9 +81,7 @@ namespace MusicSearch
         }
 
         public void ResetPlaying()
-        {
-            mPlaying = default(Song);
-        }
+            => mPlaying = default(Song);
 
         public int Repeat(int Count)
         {
@@ -92,27 +89,31 @@ namespace MusicSearch
             {
                 var Songs = ToArray();
                 if (Count + Songs.Length > MaxQueued)
-                {
                     Count = MaxQueued - Songs.Length;
-                }
 
                 var NewQueue = new ConcurrentQueue<Song>();
 
                 for (int i = 0; i < Count; i++)
-                {
                     NewQueue.Enqueue(Playing);
-                }
 
                 foreach (var Song in Queue)
-                {
                     NewQueue.Enqueue(Song);
-                }
 
                 Queue = NewQueue;
                 return Count;
             }
 
             return 0;
+        }
+
+        public void Shuffle()
+        {
+            var Rand = new Random();
+            var NewQueue = new ConcurrentQueue<Song>();
+            foreach (var Song in ToArray().OrderBy(x => Rand.Next()))
+                NewQueue.Enqueue(Song);
+
+            Queue = NewQueue;
         }
         
         public bool TryPush(int Place, int ToPlace, out Song Pushed)

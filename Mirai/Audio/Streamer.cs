@@ -27,8 +27,6 @@ namespace Mirai.Audio
         static byte[] BuffOut = new byte[2 * Stride];
         static int Swapper = 0;
 
-        internal static string PlaybackSpeed = string.Empty;
-
         internal static void Stop()
         {
             Cancel?.Cancel();
@@ -107,18 +105,18 @@ namespace Mirai.Audio
                     if (FFLog.StartsWith("Duration: "))
                     {
                         TimeSpan.TryParse(FFLog.Substring(10).Split(new[] { ',' }, 2, StringSplitOptions.RemoveEmptyEntries)[0], out Duration);
-                        Logger.Log("Enabled buffer acceleration during the last 3 minutes");
                     }
                     else if (FFLog.StartsWith("size="))
                     {
                         var SplitTime = FFLog.Split(new[] { "time=" }, 2, StringSplitOptions.RemoveEmptyEntries)[1];
                         TimeSpan.TryParse(SplitTime.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries)[0], out Time);
+
                         var SpeedSplit = SplitTime.Split('=');
-                        PlaybackSpeed = SpeedSplit[SpeedSplit.Length - 1].Trim();
+                        Logger.SetTitle($"Playback Speed {SpeedSplit[SpeedSplit.Length - 1].Trim()}");
                     }
                     else
                     {
-                        Logger.Log(FFLog);
+                        Logger.Log($"FFMpeg | {FFLog}");
                     }
 
                     if (Duration != default(TimeSpan) && Time != default(TimeSpan) && (TicksRemaining = Duration.Ticks - Time.Ticks) <= 0)

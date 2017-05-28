@@ -7,10 +7,13 @@ namespace Mirai
     {
         internal static void Log(object In)
         {
-//#if DEBUG
             var Text = $"[{DateTime.Now.ToString()}, {Thread.CurrentThread.ManagedThreadId}] {In}";
             Console.WriteLine(Text);
-//#endif
+        }
+
+        internal static void SetTitle(string Title)
+        {
+            Console.Title = $"Slim Mirai | {Title}";
         }
     }
 }

@@ -38,15 +38,15 @@
   <ItemGroup>
     <Reference Include="Discord.Net.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Source\Repos\Discord.Net\src\Discord.Net.WebSocket\bin\Debug\net45\Discord.Net.Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\Source\Repos\Discord.Net\src\Discord.Net.WebSocket\bin\Release\net45\Discord.Net.Core.dll</HintPath>
     </Reference>
     <Reference Include="Discord.Net.Rest, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Source\Repos\Discord.Net\src\Discord.Net.WebSocket\bin\Debug\net45\Discord.Net.Rest.dll</HintPath>
+      <HintPath>..\..\..\..\..\Source\Repos\Discord.Net\src\Discord.Net.WebSocket\bin\Release\net45\Discord.Net.Rest.dll</HintPath>
     </Reference>
     <Reference Include="Discord.Net.WebSocket, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Source\Repos\Discord.Net\src\Discord.Net.WebSocket\bin\Debug\net45\Discord.Net.WebSocket.dll</HintPath>
+      <HintPath>..\..\..\..\..\Source\Repos\Discord.Net\src\Discord.Net.WebSocket\bin\Release\net45\Discord.Net.WebSocket.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis, Version=1.24.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.1.24.1\lib\net45\Google.Apis.dll</HintPath>

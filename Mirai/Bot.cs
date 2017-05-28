@@ -29,6 +29,17 @@ namespace Mirai
             }
         }
 
+        internal static async Task JoinOwner()
+        {
+            var Users = Client.Guilds.SelectMany(x => x.Users);
+            foreach (var User in Users)
+                if (User.Id == Mirai.User.Owner && User.VoiceChannel != null)
+                {
+                    await Audio.Connection.JoinSame(User as IGuildUser);
+                    break;
+                }
+        }
+
         internal static async Task Login(string Token, ulong Channel)
         {
             ChannelId = Channel;
