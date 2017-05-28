@@ -10,9 +10,13 @@ EN-US Language Support: https://www.microsoft.com/en-us/download/details.aspx?id
 
 Restart the PC after installing SAPI and the language support.
 
+**Features**
+
 Text commands: index, deindex, join, name, avatar, v
 
 Voice commands: next, remove x, move x to x, add x, what's up, set the volume/tone to x, how are you doing, shut down the program
+
+Uses Discord's TTS for feedback on voice commands.
 
 **FAQ**
 
