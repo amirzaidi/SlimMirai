@@ -42,9 +42,7 @@ namespace Mirai.Management
             foreach (var Attachment in e.Attachments)
                 if (Attachment.Height != null)
                 {
-                    var Request = (HttpWebRequest)WebRequest.Create(Attachment.Url);
-
-                    using (var Response = await Request.GetResponseAsync())
+                    using (var Response = await WebRequest.Create(Attachment.Url).GetResponseAsync())
                     using (var Stream = new MemoryStream())
                     {
                         using (var Picture = Image.FromStream(Response.GetResponseStream()))
