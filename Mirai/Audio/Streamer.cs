@@ -2,6 +2,7 @@
 using MusicSearch;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -87,10 +88,11 @@ namespace Mirai.Audio
 
         private static async Task StreamAsync(AudioOutStream Out)
         {
+            var SS = Streamer.SS.ToString(CultureInfo.InvariantCulture);
             var FFMpeg = Process.Start(new ProcessStartInfo
             {
                 FileName = "ffmpeg",
-                Arguments = $"-ss {SS.ToString(System.Globalization.CultureInfo.InvariantCulture)} -re -i pipe:0 -f s16le -ar 48k -ac 2 -af \"{Filter.Tag}\" pipe:1",
+                Arguments = $"-ss {SS} -re -i pipe:0 -f s16le -ar 48k -ac 2 -af \"{Filter.Tag}\" pipe:1",
                 UseShellExecute = false,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
@@ -141,7 +143,7 @@ namespace Mirai.Audio
                         await Send;
                     }
 
-                    SS = 0; //After full process without skip
+                    Streamer.SS = 0; //After full process without skip
                 }
                 catch (TaskCanceledException)
                 {
