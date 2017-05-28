@@ -39,6 +39,13 @@ namespace Mirai
                 e.Append(NumberChoices);
             });
 
+            AddVoiced("repeat", Audio.Commands.Repeat, 1, e =>
+            {
+                e.Append("this");
+                e.Append(NumberChoices);
+                e.Append(new Choices("time", "times"));
+            });
+
             AddVoiced("move", Audio.Commands.Move, 1, e =>
             {
                 e.Append(NumberChoices);

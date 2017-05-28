@@ -100,6 +100,15 @@ namespace Mirai.Audio
             }
         }
 
+        internal static async Task Repeat(ulong User, Queue<string> Args)
+        {
+            Args.Dequeue();
+            if (ushort.TryParse(Args.Dequeue(), out ushort Result) && Streamer.Queue.IsPlaying)
+            {
+                Formatting.Update($"Repeated {Streamer.Queue.Playing.Title} {Streamer.Queue.Repeat(Result)} times");
+            }
+        }
+
         internal static async Task Shuffle(ulong User, Queue<string> Args)
         {
             Streamer.Queue.Shuffle();
