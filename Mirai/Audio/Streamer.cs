@@ -151,6 +151,7 @@ namespace Mirai.Audio
                 }
 
             Logger.Log("Disposed FFMpeg Pipe 1");
+            Logger.SetTitle($"Finished Playing");
 
             try
             {

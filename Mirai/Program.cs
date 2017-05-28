@@ -31,6 +31,8 @@ namespace Mirai
             await Bot.Login(Config("Token", "MTczNzM0NjX3MjkwMjc5PTM3.Cf-Vew.KXzR..."), ulong.Parse(Config("Channel", "155608929122910208")));
             Command.Load(Bot.User.Mention.Replace("!", ""));
 
+            Logger.SetTitle("Booted");
+
             await Bot.JoinOwner();
             await Shutdown.Task;
         }
