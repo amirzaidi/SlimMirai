@@ -174,6 +174,9 @@ namespace Mirai.Audio
             catch (PathTooLongException)
             {
             }
+            catch (NotSupportedException)
+            {
+            }
             catch (Exception Ex)
             {
                 Logger.Log(Ex);

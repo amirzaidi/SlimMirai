@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
@@ -72,7 +73,7 @@ namespace MusicSearch
                 if (SCRes != string.Empty && SC.StartsWith("{\"kind\":\"track\""))
                     Results.Add(SoundCloudParse(JToken.Parse(SCRes)));
             }
-            /*else if (Sources.Contains(SongType.Storage) && Uri.TryCreate(Query, UriKind.Absolute, out Uri Url))
+            else if (Sources.Contains(SongType.Storage) && Uri.TryCreate(Query, UriKind.Absolute, out Uri Url))
             {
                 Results.Add(new Song
                 {
@@ -81,7 +82,7 @@ namespace MusicSearch
                     Url = Query,
                     Type = SongType.Storage
                 });
-            }*/
+            }
 
             if (Sources.Contains(SongType.Storage) && Query.Length >= 3)
             {
