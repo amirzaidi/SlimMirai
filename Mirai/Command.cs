@@ -22,7 +22,8 @@ namespace Mirai
                 { "deindex", new TextCommand(Audio.Commands.Deindex, 1) },
                 { "join", new TextCommand(Audio.Commands.Join, 1) },
                 { "v", new TextCommand(Management.Commands.Voice, 1) },
-                { "name", new TextCommand(Management.Commands.Name, 2) }
+                { "name", new TextCommand(Management.Commands.Name, 2) },
+                { "avatar", new TextCommand(Management.Commands.Avatar, 2) }
             };
 
             Voiced.Clear();

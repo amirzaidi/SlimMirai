@@ -1,5 +1,9 @@
 ﻿using Discord.WebSocket;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Mirai.Management
@@ -30,7 +34,26 @@ namespace Mirai.Management
 
         internal static async Task Name(string s, SocketMessage e)
         {
-            Bot.User.ModifyAsync(x => x.Username = s);
+            await Bot.User.ModifyAsync(x => x.Username = s);
+        }
+
+        internal static async Task Avatar(string s, SocketMessage e)
+        {
+            foreach (var Attachment in e.Attachments)
+                if (Attachment.Height != null)
+                {
+                    var Request = (HttpWebRequest)WebRequest.Create(Attachment.Url);
+
+                    using (var Response = await Request.GetResponseAsync())
+                    using (var Stream = new MemoryStream())
+                    {
+                        using (var Picture = Image.FromStream(Response.GetResponseStream()))
+                            Picture.Save(Stream, ImageFormat.Bmp);
+
+                        Stream.Seek(0, SeekOrigin.Begin);
+                        await Bot.User.ModifyAsync(x => x.Avatar = new Discord.Image(Stream));
+                    }
+                }
         }
     }
 }
