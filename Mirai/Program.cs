@@ -1,5 +1,5 @@
 ﻿using Mirai.Audio;
-using MusicSearch;
+using Search;
 using System;
 using System.Configuration;
 using System.Diagnostics;

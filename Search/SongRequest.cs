@@ -11,7 +11,7 @@ using System.Xml;
 using YoutubeExplode;
 using YoutubeExplode.Models.MediaStreams;
 
-namespace MusicSearch
+namespace Search
 {
     public class SongRequest
     {

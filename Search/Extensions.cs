@@ -4,7 +4,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MusicSearch
+namespace Search
 {
     static class Extensions
     {

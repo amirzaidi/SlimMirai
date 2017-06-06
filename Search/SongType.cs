@@ -1,4 +1,4 @@
-﻿namespace MusicSearch
+﻿namespace Search
 {
     public enum SongType
     {

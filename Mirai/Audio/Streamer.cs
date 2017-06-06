@@ -1,5 +1,5 @@
 ﻿using Discord.Audio;
-using MusicSearch;
+using Search;
 using System;
 using System.Diagnostics;
 using System.Globalization;

@@ -1,7 +1,7 @@
 ﻿using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 
-namespace MusicSearch
+namespace Search
 {
     public class API
     {

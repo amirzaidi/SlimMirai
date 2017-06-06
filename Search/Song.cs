@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MusicSearch
+namespace Search
 {
     [JsonObject(MemberSerialization.OptIn)]
     public struct Song

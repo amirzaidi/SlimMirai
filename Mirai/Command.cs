@@ -98,7 +98,7 @@ namespace Mirai
         {
             var Regex = new Regex("[^a-zA-Z0-9 '-]");
             var PartList = new List<string>();
-            foreach (var File in MusicSearch.SongRequestLocal.GetFiles())
+            foreach (var File in Search.SongRequestLocal.GetFiles())
             {
                 var SplitArtist = File.Name.Split(new[] { " - " }, 2, StringSplitOptions.None);
                 var SongName = SplitArtist.Last();

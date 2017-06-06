@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MusicSearch
+namespace Search
 {
     public class SongQueue
     {

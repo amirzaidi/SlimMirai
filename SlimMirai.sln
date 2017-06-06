@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirai", "Mirai\Mirai.csproj", "{F9816935-7C14-4B4D-80A4-5AAD178DD95B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicSearch", "MusicSearch\MusicSearch.csproj", "{D0EF10A1-C073-457A-A176-4176404C66A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Search", "Search\Search.csproj", "{D0EF10A1-C073-457A-A176-4176404C66A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
