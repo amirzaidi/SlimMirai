@@ -13,10 +13,10 @@ namespace Mirai.Audio
             get
             {
                 var Vol = Volume.ToString(CultureInfo.InvariantCulture);
-                var Rate = (44.1 * Tone).ToString(CultureInfo.InvariantCulture);
+                var Rate = (48 * Tone).ToString(CultureInfo.InvariantCulture);
                 var Tempo = (1 / Tone).ToString(CultureInfo.InvariantCulture);
-
-                return $"volume={Vol},asetrate=r={Rate}K,atempo={Tempo},afade=t=in:d=0.4:curve=squ";
+                
+                return $"volume={Vol},afade=t=in:d=0.4:curve=squ,aresample=48K,asetrate=r={Rate}K,atempo={Tempo}";
             }
         }
     }

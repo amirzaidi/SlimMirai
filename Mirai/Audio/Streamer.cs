@@ -90,7 +90,7 @@ namespace Mirai.Audio
             var FFMpeg = Process.Start(new ProcessStartInfo
             {
                 FileName = "ffmpeg",
-                Arguments = $"-ss {SS} -re -i pipe:0 -f s16le -ar 48k -ac 2 -af \"{Filter.Tag}\" pipe:1",
+                Arguments = $"-ss {SS} -re -i pipe:0 -f s16le -ac 2 -af \"{Filter.Tag}\" -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
