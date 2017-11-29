@@ -20,6 +20,7 @@ namespace Mirai
             { 74779725393825792, new User(0.385f, 3) }, //Amir
             { 109007493279014912, new User(0.475f) },   //Kaan
             { 233954595049701377, new User(0.325f) },   //Shivan
+            { 173371010278621184, new User(0.300f) },    //Rick
             { 87982581550702592, new User(0.275f) },    //Rens
         };
 

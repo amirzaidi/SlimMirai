@@ -1,18 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.4</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1705;0659</NoWarn>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.24.1.760" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.2-beta2" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="4.3.0" />
-    <PackageReference Include="YoutubeExplode" Version="3.0.2" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.30.0.1035" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1-beta1" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.4.0" />
+    <PackageReference Include="YoutubeExplode" Version="3.4.0-workaround404" />
   </ItemGroup>
 
 </Project>

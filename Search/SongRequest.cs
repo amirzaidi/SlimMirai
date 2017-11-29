@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using YoutubeExplode;
-using YoutubeExplode.Models.MediaStreams;
 
 namespace Search
 {
@@ -28,13 +27,19 @@ namespace Search
                 YoutubeClient.TryParseVideoId(Song.Url, out string Id);
 
                 var Client = new YoutubeClient();
-                var Vid = await Client.GetVideoInfoAsync(Id);
-                MixedStreamInfo Max = null;
-                foreach (var V in Vid.MixedStreams)
-                    if (Max == null || V.VideoQuality > Max.VideoQuality)
-                        Max = V;
 
-                return Max?.Url ?? string.Empty;
+                var Vid = await Client.GetVideoAsync(Id);
+                var Url = new Func<String>(delegate { return string.Empty; });
+
+                long Bitrate = 0;
+                foreach (var V in Vid.AudioStreamInfos)
+                    if (V.Bitrate > Bitrate)
+                    {
+                        Bitrate = V.Bitrate;
+                        Url = new Func<String>(delegate { return V.Url; });
+                    }
+
+                return Url();
             }
             else if (Song.Type == SongType.SoundCloud)
             {

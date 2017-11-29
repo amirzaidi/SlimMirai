@@ -12,7 +12,7 @@ namespace Mirai.Audio
 {
     static class Commands
     {
-        internal static SongType[] SearchTypes = new[] { SongType.Storage, SongType.SoundCloud, SongType.YouTube };
+        internal static SongType[] SearchTypes = new[] { SongType.Storage, /*SongType.SoundCloud,*/ SongType.YouTube };
         static SemaphoreSlim Waiter = new SemaphoreSlim(1, 1);
 
         private static async Task<Song?> ResultAsync(string s)

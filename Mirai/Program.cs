@@ -35,6 +35,7 @@ namespace Mirai
 
             await Bot.JoinOwner();
             await Shutdown.Task;
+            await Bot.Logout();
         }
 
         static string Config(string Key, string Example)

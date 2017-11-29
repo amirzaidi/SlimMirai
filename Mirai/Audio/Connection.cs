@@ -11,7 +11,8 @@ namespace Mirai.Audio
             if (Channel != null)
             {
                 Streamer.Stop();
-
+                
+                (await Channel.ConnectAsync()).Dispose(); //Disconnect first
                 var Client = await Channel.ConnectAsync(Peer =>
                 {
                     Peer.StreamCreated += async (s, e) => Speech.StartListenService(s, e);
