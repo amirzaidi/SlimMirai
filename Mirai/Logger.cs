@@ -7,8 +7,7 @@ namespace Mirai
     {
         internal static void Log(object In)
         {
-            var Text = $"[{DateTime.Now.ToString()}, {Thread.CurrentThread.ManagedThreadId}] {In}";
-            Console.WriteLine(Text);
+            Console.WriteLine($"[{DateTime.Now.ToString()}, {Thread.CurrentThread.ManagedThreadId}] {In}");
         }
 
         internal static void SetTitle(string Title)

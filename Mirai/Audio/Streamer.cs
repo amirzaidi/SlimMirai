@@ -47,12 +47,6 @@ namespace Mirai.Audio
                 {
                     await Queue.Next(Cancel.Token);
 
-                    if (SS == 0)
-                    {
-                        Formatting.Update($"Now playing {Queue.Playing.Title}");
-                        Bot.Client.SetGameAsync(Queue.Playing.Title);
-                    }
-
                     Skip = new CancellationTokenSource();
                     
                     await Client.SetSpeakingAsync(true);
@@ -97,6 +91,7 @@ namespace Mirai.Audio
                 RedirectStandardError = true
             });
 
+            FFMpeg.PriorityClass = ProcessPriorityClass.High;
             FFMpeg.ErrorDataReceived += async (s, e) =>
             {
                 var FFLog = e?.Data?.Trim();
@@ -105,6 +100,12 @@ namespace Mirai.Audio
                     if (FFLog.StartsWith("Duration: "))
                     {
                         TimeSpan.TryParse(FFLog.Substring(10).Split(new[] { ',' }, 2, StringSplitOptions.RemoveEmptyEntries)[0], out Duration);
+
+                        if (Streamer.SS == 0)
+                        {
+                            Bot.Client.SetGameAsync(Queue.Playing.Title);
+                            Formatting.Update($"Playing {Queue.Playing.Title}");
+                        }
                     }
                     else if (FFLog.StartsWith("size="))
                     {
@@ -151,7 +152,7 @@ namespace Mirai.Audio
                 }
 
             Logger.Log("Disposed FFMpeg Pipe 1");
-            Logger.SetTitle($"Finished Playing");
+            Bot.Client.SetGameAsync(null);
 
             try
             {

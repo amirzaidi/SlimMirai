@@ -87,6 +87,40 @@ namespace Mirai.Audio
             Formatting.Update("Hello, " + Voice?.Name ?? "unknown channel");
         }
 
+        internal static async Task RegexAdd(string s, SocketMessage e)
+        {
+            Logger.Log("Adding music by regex: " + s);
+            int EndSlash = s.LastIndexOf('/');
+            int EndSlash2 = s.LastIndexOf('\\');
+            if (EndSlash2 > EndSlash)
+                EndSlash = EndSlash2;
+
+            String filename, directory = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+            if (EndSlash == -1)
+            {
+                filename = s;
+            }
+            else
+            {
+                filename = s.Substring(EndSlash + 1);
+                directory += '/' + s.Substring(0, EndSlash);
+            }
+
+            var Files = Directory.GetFiles(directory, filename);
+            foreach (var File in Files)
+            {
+                var Music = await SongRequest.Search(File, new[] { SongType.Storage }, true);
+                if (Music.Count != 0)
+                {
+                    var Playing = Streamer.Queue.IsPlaying;
+                    var Place = Streamer.Queue.Enqueue(Music[0]);
+                    Logger.Log($"Added {Music[0].Title} at {Place}");
+                    if (Playing)
+                        Formatting.Update($"Added {Music[0].Title} at {Place}");
+                }
+            }
+        }
+
         internal static async Task Next(ulong User, Queue<string> Args)
         {
             Streamer.Next();

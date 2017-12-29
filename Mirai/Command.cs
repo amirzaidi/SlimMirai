@@ -21,6 +21,7 @@ namespace Mirai
                 { "index", new TextCommand(Audio.Commands.Index, 1) },
                 { "deindex", new TextCommand(Audio.Commands.Deindex, 1) },
                 { "join", new TextCommand(Audio.Commands.Join, 1) },
+                { "exadd", new TextCommand(Audio.Commands.RegexAdd, 1) },
                 { "v", new TextCommand(Management.Commands.Voice, 1) },
                 { "name", new TextCommand(Management.Commands.Name, 2) },
                 { "avatar", new TextCommand(Management.Commands.Avatar, 2) }
@@ -69,6 +70,7 @@ namespace Mirai
             });
 
             AddVoiced("fuck you", "no u", 1);
+            AddVoiced("I love JavaScript", "kill yourself", 1);
             AddVoiced("how are you doing", "I'm fine, thank you~", 1);
             AddVoiced("shut down the program", Management.Commands.Shutdown, 2);
         }
