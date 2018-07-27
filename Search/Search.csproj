@@ -10,10 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.30.0.1035" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1-beta1" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="4.4.0" />
-    <PackageReference Include="YoutubeExplode" Version="3.4.0-workaround404" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.34.0.1226" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.5.0" />
+    <PackageReference Include="YoutubeExplode" Version="4.2.8" />
   </ItemGroup>
 
 </Project>

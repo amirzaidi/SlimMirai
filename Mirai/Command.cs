@@ -54,7 +54,7 @@ namespace Mirai
                 e.Append(NumberChoices);
             });
 
-            AddVoiced("add", Audio.Commands.Add, 1, e =>
+            AddVoiced("play", Audio.Commands.Add, 1, e =>
             {
                 var Songs = new GrammarBuilder(new Choices(PopulateSongList().ToArray()));
                 e.Append(new Choices(Songs, Songs + new Choices(Audio.Commands.SearchTypes.Select(x => $"from {x.ToString()}").ToArray())));

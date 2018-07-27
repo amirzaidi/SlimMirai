@@ -46,8 +46,10 @@ namespace Mirai.Audio
                 try
                 {
                     await Queue.Next(Cancel.Token);
-
                     Skip = new CancellationTokenSource();
+
+                    if (SS == 0)
+                        Formatting.Update($"Now playing {Queue.Playing.Title}");
                     
                     await Client.SetSpeakingAsync(true);
                     using (var Out = Client.CreateDirectPCMStream(AudioApplication.Music, 128 * 1024, 0))
@@ -80,11 +82,11 @@ namespace Mirai.Audio
 
         private static async Task StreamAsync(AudioOutStream Out)
         {
-            var SS = Streamer.SS.ToString(CultureInfo.InvariantCulture);
+            var SSText = SS.ToString(CultureInfo.InvariantCulture);
             var FFMpeg = Process.Start(new ProcessStartInfo
             {
                 FileName = "ffmpeg",
-                Arguments = $"-ss {SS} -re -i pipe:0 -f s16le -ac 2 -af \"{Filter.Tag}\" -ar 48000 pipe:1",
+                Arguments = $"-ss {SSText} -re -i pipe:0 -f s16le -ac 2 -af \"{Filter.Tag}\" -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
@@ -101,11 +103,8 @@ namespace Mirai.Audio
                     {
                         TimeSpan.TryParse(FFLog.Substring(10).Split(new[] { ',' }, 2, StringSplitOptions.RemoveEmptyEntries)[0], out Duration);
 
-                        if (Streamer.SS == 0)
-                        {
-                            Bot.Client.SetGameAsync(Queue.Playing.Title);
-                            Formatting.Update($"Playing {Queue.Playing.Title}");
-                        }
+                        if (SS == 0 && Duration.TotalMilliseconds > 0)
+                            Bot.Client.SetGameAsync($"a song ({Math.Floor(Duration.TotalMinutes)}:{Duration.Seconds})");
                     }
                     else if (FFLog.StartsWith("size="))
                     {
@@ -142,7 +141,7 @@ namespace Mirai.Audio
                         await Send;
                     }
 
-                    Streamer.SS = 0; //After full process without skip
+                    SS = 0; //After full process without skip
                 }
                 catch (TaskCanceledException)
                 {

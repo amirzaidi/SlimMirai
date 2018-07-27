@@ -28,11 +28,11 @@ namespace Search
 
                 var Client = new YoutubeClient();
 
-                var Vid = await Client.GetVideoAsync(Id);
+                var Vid = await Client.GetVideoMediaStreamInfosAsync(Id);
                 var Url = new Func<String>(delegate { return string.Empty; });
 
                 long Bitrate = 0;
-                foreach (var V in Vid.AudioStreamInfos)
+                foreach (var V in Vid.Audio)
                     if (V.Bitrate > Bitrate)
                     {
                         Bitrate = V.Bitrate;

@@ -20,7 +20,7 @@ namespace Mirai.Audio
             {
                 var New = await Bot.SendTTS(TTSMessage, new EmbedBuilder()
                     .WithTitle(Streamer.Queue.IsPlaying ? 
-                        ($"♫ {Streamer.Queue.Playing.Title}{(Streamer.Duration.TotalMilliseconds == 0 ? "" : $" [{Math.Floor(Streamer.Duration.TotalMinutes)}:{Streamer.Duration.Seconds}]")} ♫")
+                        ($"♫ {Streamer.Queue.Playing.Title} ♫")
                         : "Nothing is playing")
                     .WithUrl(Streamer.Queue.IsPlaying && Streamer.Queue.Playing.Url.StartsWith("http") ? Streamer.Queue.Playing.Url : "https://github.com/amirzaidi/slimmirai")
                     .WithThumbnailUrl(Streamer.Queue.Playing.ThumbNail)

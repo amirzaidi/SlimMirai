@@ -22,6 +22,7 @@ namespace Mirai
             { 233954595049701377, new User(0.325f) },   //Shivan
             { 173371010278621184, new User(0.300f) },    //Rick
             { 87982581550702592, new User(0.275f) },    //Rens
+            { 394822386295373846, new User(0.25f) },    //Ismet
         };
 
         internal static int GetRank(ulong Id)
